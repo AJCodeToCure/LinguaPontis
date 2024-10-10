@@ -1,25 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
+import AgencyUser from "./pages/agencyUser/AgencyUser";
+import DashboardLayout from "./pages/dashboard/Dashboard";
+import EventManagementPage from "./pages/eventManagement/EventManagementPage";
+import Login from "./pages/login/Login";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  <div>
+    {/* <DashboardLayout /> */}
+    {/* <Login /> */}
+    {/* <AgencyUser /> */}
+    <EventManagementPage />
+  </div>
+  )
 }
-
-export default App;
