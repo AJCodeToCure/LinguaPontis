@@ -27,8 +27,8 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
       <aside className={`bg-[var(--darkBlue)] text-white transition-all duration-300 ease-in-out ${isOpen ? 'w-64' : 'w-20'} min-h-screen`}>
         <div className="mt-[63.5px] p-4 flex items-center justify-between">
           <h2 className={`flex justify-center align-middle text-[14px] font-bold font-[Lexend Mega] ${isOpen ? 'block' : 'hidden'}`} style={{fontFamily:"Lexend Mega"}}><span className='mr-2 justify-center mt-0'><Logo /></span>  LinguoPontis</h2>
-          <button onClick={toggleSidebar} className="text-white ">
-            {isOpen ? <ChevronLeftIcon className="w-6 h-6" /> : <ChevronRightIcon className="w-6 h-6" />}
+          <button onClick={toggleSidebar} className={`text-white  bg-[#0077B6] translate-y-10 ${isOpen ? "translate-x-6 delay-0.5" : "translate-x-12 delay-0.5"} rounded-[16px]`}>
+            {isOpen ? <ChevronLeftIcon className="w-6 h-6 " /> : <ChevronRightIcon className="w-6 h-6 " />}
           </button>
         </div>
         <nav className='mt-[47.5px]'>

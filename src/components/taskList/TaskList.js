@@ -13,8 +13,8 @@ const TaskCard = ({ taskTitle, time, taskNumber, totalEvents, priority, priority
   return (
     <div className="bg-white shadow-md rounded-[25px] p-4 mb-4 flex flex-col">
       {/* Task Header */}
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-[11px] font-semibold font-[Mada] text-blue-900">{taskTitle}</h3>
+      <div className="flex justify-between text-center items-center mb-3">
+        <h3 className="text-[16px] text-center  font-bold font-[Mada] text-blue-900">{taskTitle}</h3>
         <div className="text-blue-900">
             <NextIconCard />
         </div>
@@ -65,11 +65,11 @@ const TaskList = ({ taskGroupTitle, tasks }) => {
   const displayedTasks = tasks.slice(0, 3);
 
   return (
-    <div className="bg-[var(--lightBlue)] p-6 rounded-lg">
-      <h1 className="text-xl font-bold font-[Nunito] text-[var(--darkBlue)] mb-4 flex"><span className='mr-2'><CardTitleIcon /></span>
+    <div className=" rounded-lg">
+      {/* <h1 className="text-xl font-bold font-[Nunito] text-[var(--darkBlue)] mb-4 flex"><span className='mr-2'><CardTitleIcon /></span>
        {taskGroupTitle}
      <span className='ml-2'>  <CardOpenIcon /> </span>
-        </h1>
+        </h1> */}
       <div>
         {displayedTasks.map((task, index) => (
           <TaskCard
