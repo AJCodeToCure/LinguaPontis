@@ -53,13 +53,14 @@ const UserManagement = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="pl-20 flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-white p-6">
           <div className="container mt-20 max-sm:w-full w-10/12 mx-auto">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 max-sm:flex-col">
               <h1 className="text-2xl font-semibold font-[Poppins]">All Agencies Data</h1>
-              <div className="flex items-center">
-                <div className="relative mr-4">
+              <div className="flex items-center max-sm:flex-col">
+
+                <div className="relative mr-4 max-sm:mt-5 max-sm:mb-5">
                   <input
                     type="text"
                     placeholder="Search"
@@ -165,7 +166,7 @@ const UserManagement = () => {
             </div>
           </div>
           <div className="mt-10">
-            <div className="flex justify-center gap-4 pb-4">
+            <div className="flex justify-center gap-4 pb-4 max-sm:flex-col">
               <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Details</button>
               <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Modify Details</button>
               <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">View Details</button>

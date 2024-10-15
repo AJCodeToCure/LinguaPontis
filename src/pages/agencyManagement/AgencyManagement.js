@@ -30,7 +30,7 @@ const AgencyManagement = () => {
   return (
     <div className="flex h-screen">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-      <div className="flex-1 flex flex-col p-6 overflow-auto">
+      <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
         <h1 className="text-2xl mt-10 font-bold mb-6">Agency Details</h1>
 
         <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">

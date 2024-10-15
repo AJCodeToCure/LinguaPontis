@@ -23,7 +23,7 @@ const BeneficiaryManagement = () => {
     return (
         <div className="flex h-screen bg-gray-100">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-            <div className="flex-1 flex flex-col p-6">
+            <div className="pl-20 flex-1 flex flex-col p-6">
                 <div className="flex-1 mt-[10%] max-sm:mt-0 overflow-auto w-full max-w-10xl rounded-lg p-6">
                     <h1 className="text-2xl font-extrabold text-[var(--darkText)] font-[Nunito] text-left mb-[52px]">Meeting Object</h1>
 
@@ -68,7 +68,7 @@ const BeneficiaryManagement = () => {
                 </div>
 
                 {/* Buttons at the bottom */}
-                <div className="flex flex-col sm:flex-row justify-center space-x-0 sm:space-x-4 mt-4">
+                <div className="flex flex-col sm:flex-row justify-center max-sm:pl-2 space-x-0 sm:space-x-4 mt-4">
                     <Button variant="primary" className="mb-2 sm:mb-0">Create Event</Button>
                     <Button variant="primary" className="mb-2 sm:mb-0">Modify Event</Button>
                     <Button variant="primary" className="mb-2 sm:mb-0">View Event</Button>

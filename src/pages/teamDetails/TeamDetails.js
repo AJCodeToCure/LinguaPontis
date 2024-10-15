@@ -114,7 +114,7 @@ const TeamDetails = () => {
     return (
         <div className="flex h-screen bg-gray-100">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="pl-20 flex-1 flex flex-col overflow-hidden">
                 <Navbar heading={["Agency Dashboard > Team Details > "]}/>
                 <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                     <h1 className='mt-5 mb-10 text-center text-2xl font-[Nunito] font-extrabold text-[var(--darkBlue)]'>NPO 01 Teams</h1>

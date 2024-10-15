@@ -30,7 +30,7 @@ const MediatorAvailability = () => {
   return (
     <div className="flex h-screen">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-      <div className="flex-1 flex flex-col p-6 overflow-auto">
+      <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
         <h1 className="text-2xl mt-10 font-bold mb-6">Mediator Personal Details</h1>
 
         <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">
@@ -74,7 +74,7 @@ const MediatorAvailability = () => {
         {/* Button section */}
         <div className="mt-auto">
           <div className="flex justify-center gap-4 pb-4">
-            <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Event</button>
+            <button className="px-4 py-2 bg-[var(--darkBlue)]  text-white rounded-md hover:bg-blue-800">Create Event</button>
             <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Modify Event</button>
             <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">View Event</button>
           </div>
