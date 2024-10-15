@@ -24,15 +24,15 @@ export default function App() {
     <BrowserRouter>
         <Routes>
         <Route path="/" element={<Login/>} />
-        <Route path="/dashboard" element={<DashboardLayout/>} />
+        <Route path="/teamdt" element={<TeamDetails/>} />
+        {/* <Route path="/dashboard" element={<DashboardLayout/>} /> */}
         <Route path="/eventmn" element={<EventManagementPage/>} />
+        <Route path="/benefmn" element={<BeneficiaryManagement/>}/>
+        <Route path="/taskmn" element={<TaskManagement/>}/>
         <Route path="/mediatorav" element={<MediatorAvailability/>} />
         <Route path="/usermn" element={<UserManagement/>} />
         <Route path="/agencymn" element={<AgencyManagement/>} />
-        <Route path="/teamdt" element={<TeamDetails/>} />
         <Route path="/agencyuser" element={<AgencyUser/>} />
-        <Route path="/benefmn" element={<BeneficiaryManagement/>}/>
-        <Route path="/taskmn" element={<TaskManagement/>}/>
         </Routes>
     </BrowserRouter>
   </div>
