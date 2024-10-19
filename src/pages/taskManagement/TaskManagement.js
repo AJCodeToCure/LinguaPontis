@@ -19,7 +19,7 @@ const eventData = [
 ];
 
 const TaskManagement = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [selectedEvents, setSelectedEvents] = useState([]);
 
@@ -151,11 +151,15 @@ const TaskManagement = () => {
           </table>
         </div>
       </div>
-      
+      <div className="flex max-sm:mt-5 flex-col sm:flex-row justify-center max-sm:pl-2 space-x-0 sm:space-x-4 mt-4">
+            <Button variant="primary" className="mb-2 sm:mb-0">Generate Report</Button>
+            <Button variant="primary" className="mb-2 sm:mb-0">View Report</Button>
+            <Button variant="primary" className="mb-2 sm:mb-0">Export Reports</Button>
+
+          </div>
       </div>
       
     </div>
-    
 
     </div>
     

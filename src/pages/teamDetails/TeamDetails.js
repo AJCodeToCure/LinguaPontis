@@ -2,11 +2,12 @@ import { React, useState, Fragment } from 'react';
 import TeamCard from '../../components/teamCard/TeamCard';
 import { Sidebar } from '../../components/sideBar/SideBar';
 import { Navbar } from '../../components/navBar/NavBar';
+import {Link} from "react-router-dom";
 
 
 
 const TeamDetails = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1); // Track current page
     const cardsPerPage = 3; // Display 3 cards per page
 
@@ -123,7 +124,9 @@ const TeamDetails = () => {
                         <div className="w-full lg:w-3/4 mb-6 lg:mb-0 lg:pr-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {currentCards.map((team, index) => (
+                                    <Link to ="/team-user-management"key={index}>
                                     <TeamCard key={index} {...team} />
+                                    </Link>
                                 ))}
                             </div>
                         </div>

@@ -21,7 +21,7 @@ const DropdownSelect = ({ label, options }) => (
 
   
 const MediatorAvailability = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const [selectedDate, setSelectedDate] = useState(new Date());

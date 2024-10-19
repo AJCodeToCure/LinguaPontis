@@ -16,7 +16,7 @@ const agenciesData = [
 ];
 
 const UserManagement = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5); // Display 5 items per page
   const [selectedAgencies, setSelectedAgencies] = useState([]);

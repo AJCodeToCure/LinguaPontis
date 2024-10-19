@@ -15,7 +15,7 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
   const menuItems = [
     { icon: <DashboardIcon className="w-6 h-6" />, label: 'Dashboard', link: '/' },
     { icon: <EventManagementIcons className="w-6 h-6" />, label: 'Event Management', link: '/event-management' },
-    { icon: <TeamManagementIcon className="w-6 h-6" />, label: 'Team Management', link: '/team-user-management' },
+    { icon: <TeamManagementIcon className="w-6 h-6" />, label: 'Team Management', link: '/user-management' },
     { icon: <MediatorAvailablitiyIcons className="w-6 h-6" />, label: 'Mediator Availability', link: '/mediator-availability' },
     { icon: <TaskManagementIcon className="w-6 h-6" />, label: 'Task Management', link: '/task-management' },
     { icon: <NotificationIcon className="w-6 h-6" />, label: 'Notifications', link: '#' }, // Add notification route if applicable

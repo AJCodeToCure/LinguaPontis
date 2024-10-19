@@ -6,7 +6,7 @@ import InputField from '../../components/inputField/InputField';
 import Button from '../../components/button/Button';
 
 const BeneficiaryManagement = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
     const options = [

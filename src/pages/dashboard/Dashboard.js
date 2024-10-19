@@ -6,7 +6,7 @@ import { Navbar } from '../../components/navBar/NavBar';
 
 // Main Dashboard Component
 const Dashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [taskData,setTaskData] = useState(TaskData);
 

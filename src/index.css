@@ -23,5 +23,37 @@
 input[type='checkbox'] {
     accent-color: #FF7E36;
 
+ 
+
 }
 
+/* Hide the default checkbox */
+input[type="checkbox"] {
+    -webkit-appearance: none; /* For Safari */
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #FF7E36;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Create a custom checkmark when checkbox is checked */
+input[type="checkbox"]:checked {
+    background-color: #FF7E36;
+    border-color: #FF7E36;
+}
+
+/* Create the tick symbol using ::after */
+input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import TaskData from './taskData';
 import { Sidebar } from '../../components/sideBar/SideBar';
 import { Navbar } from '../../components/navBar/NavBar';
@@ -89,7 +90,7 @@ const StatsRow = () => {
 
 // Main Dashboard Component
 const DashboardAgency = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [taskData, setTaskData] = useState(TaskData);
 
@@ -165,8 +166,8 @@ const DashboardAgency = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {npoCards.map((npo, index) => (
+              <Link to="task-details" key={index}>
               <MainNPOcard
-                key={index}
                 date={npo.date}
                 npoNumber={npo.npoNumber}
                 totalTasks={npo.totalTasks}
@@ -176,7 +177,8 @@ const DashboardAgency = () => {
                 teamMembers={npo.teamMembers}
                 priority={npo.priority}
                 pendingEvents={npo.pendingEvents}
-              />
+                />
+                </Link> 
             ))}
           </div>
         </main>
