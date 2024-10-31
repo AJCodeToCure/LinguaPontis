@@ -40,12 +40,14 @@ const BeneficiaryManagement = () => {
     };
 
     console.log("Request Body:", requestData);
-    debugger;
+    
     try {
       const result = await createEvent(requestData);
       console.log("Event created successfully:", result);
+      alert("Event created successfully");
     } catch (error) {
       console.error("Failed to create event:", error);
+      alert("Failed to create event");
     }
   };
 
