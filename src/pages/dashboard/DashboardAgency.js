@@ -166,7 +166,7 @@ const DashboardAgency = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {npoCards.map((npo, index) => (
-              <Link to="task-details" key={index}>
+              <Link to="/task-details" key={index}>
               <MainNPOcard
                 date={npo.date}
                 npoNumber={npo.npoNumber}
