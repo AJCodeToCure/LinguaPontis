@@ -13,7 +13,7 @@ import SettingsIcon from '../../assets/SettingsIcon';
 
 export const Sidebar = ({ isOpen, toggleSidebar }) => {
   const menuItems = [
-    { icon: <DashboardIcon className="w-6 h-6" />, label: 'Dashboard', link: '/' },
+    { icon: <DashboardIcon className="w-6 h-6" />, label: 'Dashboard', link: '/dashboard' },
     { icon: <EventManagementIcons className="w-6 h-6" />, label: 'Event Management', link: '/event-management' },
     { icon: <AgenciesManagementIcon className="w-6 h-6" />, label: 'Agencies', link: '/agencies' },
     { icon: <CreatAgencyIcons className="w-6 h-6" />, label: 'Create Agency', link: '/create-agency' },

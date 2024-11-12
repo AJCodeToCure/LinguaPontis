@@ -3,10 +3,12 @@ import { Sidebar } from "../../components/sideBar/SideBar";
 import InputField from "../../components/inputField/InputField";
 import Button from "../../components/button/Button";
 import { createEvent } from "../../components/api/Events";
+import {useNavigate} from 'react-router-dom';
 
 const BeneficiaryManagement = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     summary: "",
@@ -45,6 +47,11 @@ const BeneficiaryManagement = () => {
       const result = await createEvent(requestData);
       console.log("Event created successfully:", result);
       alert("Event created successfully");
+
+      //navigate to the events page
+      navigate('/event-management');
+
+
     } catch (error) {
       console.error("Failed to create event:", error);
       alert("Failed to create event");
