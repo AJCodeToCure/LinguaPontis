@@ -2,24 +2,56 @@ import React, { useState } from 'react';
 import bgImage from '../../assets/images/login_bg.png'; // Adjust the path based on your folder structure
 import EmailIcon from '../../assets/EmailIcon';
 import KeyIcon from "../../assets/KeyIcon";
-import EyeIcon from "../../assets/EyeIcon";  // Assuming you have an EyeIcon in your assets
+import EyeIcon from "../../assets/EyeIcon";
+import { login } from '../../components/api/Authenticate';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const [email, setEmail] = useState(''); // State for email input
+  const [password, setPassword] = useState(''); // State for password input
   const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
+  const navigate = useNavigate();
+
+
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent form from submitting the default way
+
+    try {
+      const response = await login(email, password); // Call login API
+
+      console.log("Login response:", response);
+
+      //check response status is success
+      if (response.status !== "success") {
+        throw new Error("Login failed");
+      }
+
+      //Redirect to the dashboard page
+      navigate('/dashboard');
+      
+
+
+
+
+    } catch (error) {
+      console.error("Login failed:", error);
+      // Error is already handled in the login function
+      alert("Login failed. Please check your email and password.");
+
+    }
+  };
 
   return (
     <div
       className="min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: `url(${bgImage})` }} // Use background image from assets
+      style={{ backgroundImage: `url(${bgImage})` }}
     >
       <div className="flex items-center justify-center h-screen">
         <div className="w-full max-w-md p-8 ">
-          
-          {/* Welcome and LinguaPontis text */}
           <h2 className="text-3xl font-bold text-left text-gray-800 mb-1">Welcome to</h2>
           <h2 className="text-[46px] font-serif font-semibold text-[var(--darkBlue)] mb-10">LinguaPontis</h2>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email Field */}
             <div className="relative">
               <label htmlFor="email" className="sr-only">Email</label>
@@ -27,10 +59,12 @@ const Login = () => {
                 <EmailIcon />
               </div>
               <input 
-                type="email" 
-                name="email" 
-                id="email" 
-                placeholder="Email" 
+                type="email"
+                name="email"
+                id="email"
+                placeholder="Email"
+                value={email} // Bind to email state
+                onChange={(e) => setEmail(e.target.value)} // Update email state
                 className="w-full pl-10 pr-2 py-2 border border-gray-300 rounded-[20px] focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -42,10 +76,12 @@ const Login = () => {
                 <KeyIcon />
               </div>
               <input 
-                type={showPassword ? "text" : "password"} // Toggle between text and password
+                type={showPassword ? "text" : "password"} 
                 name="password" 
                 id="password" 
                 placeholder="Password" 
+                value={password} // Bind to password state
+                onChange={(e) => setPassword(e.target.value)} // Update password state
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-[20px] focus:ring-blue-500 focus:border-blue-500"
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
@@ -73,13 +109,10 @@ const Login = () => {
               >
                 Log in
               </button>
-                {/* Register Link */}
-            <div className="text-sm text-center mt-2 text-gray-600">
-              Don’t have an account? <a href="#" className="text-blue-600 font-medium hover:text-blue-500">Register</a>
+              <div className="text-sm text-center mt-2 text-gray-600">
+                Don’t have an account? <a href="#" className="text-blue-600 font-medium hover:text-blue-500">Register</a>
+              </div>
             </div>
-            </div>
-
-          
           </form>
         </div>
       </div>
