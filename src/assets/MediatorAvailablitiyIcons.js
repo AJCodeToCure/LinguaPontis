@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const MediatorAvailablitiyIcons = () => {
+export const CreatAgencyIcons = () => {
   return (
 <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M10.9998 2.52075C8.84823 2.52075 7.104 4.26498 7.104 6.41659C7.104 8.56819 8.84823 10.3124 10.9998 10.3124C13.1514 10.3124 14.8957 8.56819 14.8957 6.41659C14.8957 4.26498 13.1514 2.52075 10.9998 2.52075ZM5.729 6.41659C5.729 3.50558 8.08884 1.14575 10.9998 1.14575C13.9108 1.14575 16.2707 3.50558 16.2707 6.41659C16.2707 9.32759 13.9108 11.6874 10.9998 11.6874C8.08884 11.6874 5.729 9.32759 5.729 6.41659Z" fill="white"/>

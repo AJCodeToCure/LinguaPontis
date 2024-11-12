@@ -2,8 +2,8 @@ import SettingsIcon from "../../assets/SettingsIcon";
 import DashboardIcon from "../../assets/DashboardIcon";
 import { NotificationIcon } from "../../assets/NotificationIcon";
 import TaskManagementIcon from "../../assets/TaskManagementIcon";
-import { MediatorAvailablitiyIcons } from "../../assets/MediatorAvailablitiyIcons";
-import { TeamManagementIcon } from "../../assets/TeamManagementIcon";
+import { CreatAgencyIcons } from "../../assets/MediatorAvailablitiyIcons";
+import { AgenciesManagementIcon } from "../../assets/TeamManagementIcon";
 import EventManagementIcons from "../../assets/EventManagementIcons";
 import { TopBarFirstIcon } from "../../assets/TopBarFirstIcon";
 
@@ -15,8 +15,8 @@ const TopNavBar = () => {
                 <TopBarFirstIcon className="text-white h-6 w-6" />
                 <DashboardIcon className="text-white h-6 w-6" />
                 <EventManagementIcons className="text-white h-6 w-6" />
-                <TeamManagementIcon className="text-white h-6 w-6" />
-                <MediatorAvailablitiyIcons className="text-white h-6 w-6" />
+                <AgenciesManagementIcon className="text-white h-6 w-6" />
+                <CreatAgencyIcons className="text-white h-6 w-6" />
                 <TaskManagementIcon className="text-white h-6 w-6" />
                 <NotificationIcon className="text-white h-6 w-6" />
                 <SettingsIcon className="text-white h-6 w-6" />

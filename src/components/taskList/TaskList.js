@@ -1,5 +1,5 @@
 import React from 'react';
-import { TeamManagementIcon } from '../../assets/TeamManagementIcon';
+import { AgenciesManagementIcon } from '../../assets/TeamManagementIcon';
 import { CardTitleIcon } from '../../assets/CardTitleIcon';
 import { CardOpenIcon } from '../../assets/CardOpenIcon';
 import { NextIconCard } from '../../assets/NextIconCard';

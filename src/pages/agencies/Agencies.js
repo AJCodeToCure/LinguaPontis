@@ -1,28 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import React from 'react';
 import { Sidebar } from '../../components/sideBar/SideBar';
 import { ChevronDown, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { MagnifyingIcons } from "../../assets/MagnifyingIcons";
+import { fetchAgencies } from '../../components/api/Agency';
 
-const agenciesData = [
-  { id: 1, type: 'NPO', name: 'Microsoft', phone: '(225) 555-0118', email: 'jane@microsoft.com', country: 'United States', status: 'Online' },
-  { id: 2, type: 'Agency', name: 'Yahoo', phone: '(205) 555-0100', email: 'floyd@yahoo.com', country: 'Kiribati', status: 'Onsite' },
-  { id: 3, type: 'NPO', name: 'Adobe', phone: '(302) 555-0107', email: 'ronald@adobe.com', country: 'Germany', status: 'Onsite' },
-  { id: 4, type: 'Agency', name: 'Tesla', phone: '(252) 555-0126', email: 'marvin@tesla.com', country: 'Iran', status: 'Online' },
-  { id: 5, type: 'NPO', name: 'Google', phone: '(629) 555-0129', email: 'jerome@google.com', country: 'Réunion', status: 'Online' },
-  { id: 6, type: 'Agency', name: 'Microsoft', phone: '(406) 555-0120', email: 'kathryn@microsoft.com', country: 'Curaçao', status: 'Online' },
-  { id: 7, type: 'Agency', name: 'Yahoo', phone: '(208) 555-0112', email: 'jacob@yahoo.com', country: 'Brazil', status: 'Online' },
-  { id: 8, type: 'NPO', name: 'Facebook', phone: '(704) 555-0127', email: 'kristin@facebook.com', country: 'Åland Islands', status: 'Onsite' },
-];
-
-const UserManagement = () => {
+const Agencies = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5); // Display 5 items per page
   const [selectedAgencies, setSelectedAgencies] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [agenciesData, setAgenciesData] = useState([]); // State to store agencies data
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  // Fetch agencies data from the API when the component mounts
+  useEffect(() => {
+    fetchAgencies().then((data) => {
+      setAgenciesData(
+        data.map((agency) => ({
+          id: agency.id,
+          type: agency.type,
+          name: agency.company_name,
+          phone: agency.phone,
+          email: agency.email,
+          country: agency.country,
+          status: 'Online',
+          
+
+        }))
+      );
+    });
+  }, []);
 
   // Toggle individual agency selection
   const toggleAgencySelection = (id) => {
@@ -59,7 +69,6 @@ const UserManagement = () => {
             <div className="flex justify-between items-center mb-6 max-sm:flex-col">
               <h1 className="text-2xl font-semibold font-[Poppins]">All Agencies Data</h1>
               <div className="flex items-center max-sm:flex-col">
-
                 <div className="relative mr-4 max-sm:mt-5 max-sm:mb-5">
                   <input
                     type="text"
@@ -86,7 +95,7 @@ const UserManagement = () => {
                     <th className="p-3">
                       <input
                         type="checkbox"
-                        className="form-checkbox h-4 w-4 text-orange-600" // Change the color to orange
+                        className="form-checkbox h-4 w-4 text-orange-600"
                         checked={selectAll}
                         onChange={handleSelectAll}
                       />
@@ -105,7 +114,7 @@ const UserManagement = () => {
                       <td className="p-3">
                         <input
                           type="checkbox"
-                          className="form-checkbox h-4 w-4 text-orange-600" // Change the color to orange
+                          className="form-checkbox h-4 w-4 text-orange-600"
                           checked={selectedAgencies.includes(agency.id)}
                           onChange={() => toggleAgencySelection(agency.id)}
                         />
@@ -144,7 +153,6 @@ const UserManagement = () => {
                 >
                   <ChevronLeft size={20} />
                 </button>
-                {/* Pagination Buttons */}
                 {[...Array(Math.ceil(agenciesData.length / itemsPerPage)).keys()].map((num) => (
                   <button
                     key={num + 1}
@@ -170,14 +178,13 @@ const UserManagement = () => {
               <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Details</button>
               <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Modify Details</button>
               <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">View Details</button>
-              <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Revoke NPO</button>
-              <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">View Reports</button>
+              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-800">Delete</button>
             </div>
-            </div>
+          </div>
         </main>
       </div>
     </div>
   );
 };
 
-export default UserManagement;
+export default Agencies;

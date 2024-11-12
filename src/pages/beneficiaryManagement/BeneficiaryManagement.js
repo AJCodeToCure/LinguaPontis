@@ -2,7 +2,7 @@ import { React, useState } from "react";
 import { Sidebar } from "../../components/sideBar/SideBar";
 import InputField from "../../components/inputField/InputField";
 import Button from "../../components/button/Button";
-import { createEvent } from "../../components/api/createEvent";
+import { createEvent } from "../../components/api/Events";
 
 const BeneficiaryManagement = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

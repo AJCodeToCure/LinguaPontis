@@ -5,8 +5,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import Logo from '../../assets/Logo';
 import DashboardIcon from '../../assets/DashboardIcon';
 import EventManagementIcons from '../../assets/EventManagementIcons';
-import { TeamManagementIcon } from '../../assets/TeamManagementIcon';
-import { MediatorAvailablitiyIcons } from '../../assets/MediatorAvailablitiyIcons';
+import { AgenciesManagementIcon } from '../../assets/TeamManagementIcon';
+import { CreatAgencyIcons } from '../../assets/MediatorAvailablitiyIcons';
 import TaskManagementIcon from '../../assets/TaskManagementIcon';
 import { NotificationIcon } from '../../assets/NotificationIcon';
 import SettingsIcon from '../../assets/SettingsIcon';
@@ -15,8 +15,8 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
   const menuItems = [
     { icon: <DashboardIcon className="w-6 h-6" />, label: 'Dashboard', link: '/' },
     { icon: <EventManagementIcons className="w-6 h-6" />, label: 'Event Management', link: '/event-management' },
-    { icon: <TeamManagementIcon className="w-6 h-6" />, label: 'Team Management', link: '/user-management' },
-    { icon: <MediatorAvailablitiyIcons className="w-6 h-6" />, label: 'Mediator Availability', link: '/mediator-availability' },
+    { icon: <AgenciesManagementIcon className="w-6 h-6" />, label: 'Agencies', link: '/agencies' },
+    { icon: <CreatAgencyIcons className="w-6 h-6" />, label: 'Create Agency', link: '/create-agency' },
     { icon: <TaskManagementIcon className="w-6 h-6" />, label: 'Task Management', link: '/task-management' },
     { icon: <NotificationIcon className="w-6 h-6" />, label: 'Notifications', link: '#' }, // Add notification route if applicable
     { icon: <SettingsIcon className="w-6 h-6" />, label: 'Settings', link: '#' }, // Add settings route if applicable

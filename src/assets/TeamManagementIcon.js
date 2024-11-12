@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const TeamManagementIcon = ({ color }) => {
+export const AgenciesManagementIcon = ({ color }) => {
   // Set the fill color to the passed prop or fallback to a default color
   const fillColor = color || '#F1F1F1';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
-import { TeamManagementIcon } from '../../assets/TeamManagementIcon';
+import { AgenciesManagementIcon } from '../../assets/TeamManagementIcon';
 
 const MainNPOcard = ({ 
   date,
@@ -24,7 +24,7 @@ const MainNPOcard = ({
       </div>
  
       <div className="flex justify-center text-center items-center mb-4">
-        <span className='mr-2'> <TeamManagementIcon color={"#03045E"}/> </span>
+        <span className='mr-2'> <AgenciesManagementIcon color={"#03045E"}/> </span>
         <h2 className="text-center text-2xl font-[800] font-[Nunito] text-[var(--darkBlue)]">NPO {npoNumber}</h2>
       </div>
       

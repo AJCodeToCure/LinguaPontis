@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, Filter, Plus, Trash2 } from 'lucide-react';
 import { TrashIcon } from '../../assets/trashIcon';
 import { FilterIcon } from '../../assets/FilterIcon';
@@ -9,17 +9,43 @@ import { ThreeDots } from '../../assets/ThreeDots';
 import { GrayCircleIcon } from '../../assets/GrayCircleIcon';
 import TopNavBar from '../../components/topNavBar/TopNavBar';
 import { Sidebar } from '../../components/sideBar/SideBar';
-
-const eventData = [
-  { id: 1, mediatorName: 'Mediator', beneficiaryName: 'Beneficiary', idioma: 'Urdu', originCountry: 'Pakistan', fullAddress: 'Islamabad', meetingObject: 'Object Any', meetingObjective: 'Regular text column', timeDate: '15:30-17:30 28-09-2024', status: 'Online' },
-  { id: 2, mediatorName: 'Mediator', beneficiaryName: 'Beneficiary', idioma: 'Urdu', originCountry: 'Pakistan', fullAddress: 'Islamabad', meetingObject: 'Object Any', meetingObjective: 'Regular text column', timeDate: '15:30-17:30 28-09-2024', status: 'OnSite' },
-
-  // Add more mock data here...
-
-];
+import { fetchEvents } from "../../components/api/Events";
+import { Link } from 'react-router-dom';
 
 const EventManagementPage = () => {
   const [selectedEvents, setSelectedEvents] = useState([]);
+  const [eventData, setEventData] = useState([]);
+
+  // Fetch events data from the API when the component mounts
+  useEffect(() => {
+    fetchEvents().then((data) => {
+      console.log("Fetched events data:", data); // Log the fetched data
+
+      setEventData(
+        data.map((event) => ({
+          id: event.id,
+          summary: event.summary,
+          location: event.location,
+          description: event.description,
+          start: formatTime(event.start),
+          end: formatTime(event.end),
+          attendees: event.attendees.length, // Count attendees
+          is_confirmed: event.is_confirmed,
+        }))
+      );
+    });
+  }, []);
+
+  // Function to format time to 'YYYY-MM-DD HH:mm' format
+  const formatTime = (time) => {
+    const date = new Date(time);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  };
 
   const toggleEventSelection = (id) => {
     setSelectedEvents(prev =>
@@ -34,14 +60,12 @@ const EventManagementPage = () => {
   };
 
   return (
-    <div className="container  mx-auto">
-
+    <div className="container mx-auto">
       <span className='w-1/2'>
         <TopNavBar />
       </span>
 
       <div className="container mt-12 mx-auto p-4">
-
         <div className="w-full flex flex-col items-center mb-10">
           <div className="flex justify-between w-1/2 max-sm:w-full text-gray-500">
             {/* Buttons */}
@@ -56,88 +80,87 @@ const EventManagementPage = () => {
           <div className="w-1/2 max-sm:w-full border-b-2 border-gray-200 mt-2"></div>
         </div>
         
-        <div className='border rounded-lg '>
-                <div className="mb-1 p-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold font-[Nunito]">Event Details</h1>
-          <div className="flex space-x-2">
-            <button className="px-3 py-2 font-semibold text-[var(--smallText)]  flex items-center">
-              {/* <Trash2 className="w-4 h-4 mr-2" /> */}
+        <div className='border rounded-lg'>
+          <div className="mb-1 p-4 flex justify-between items-center">
+            <h1 className="text-2xl font-bold font-[Nunito]">Event Details</h1>
+            <div className="flex space-x-2">
+              <button className="px-3 py-2 font-semibold text-[var(--smallText)] flex items-center">
+                <span className='mr-[8px]'><TrashIcon /></span>
+                Delete
+              </button>
+              <button className="px-3 py-2 font-semibold text-[var(--smallText)] flex items-center">
+                <span className='mr-[8px]'><FilterIcon /></span>
+                Filters
+              </button>
 
-              <span className='mr-[8px]'><TrashIcon /></span>
-              Delete
-            </button>
-            <button className="px-3 py-2 font-semibold text-[var(--smallText)]    flex items-center">
+              <Link to="/beneficiary-management">
+                <Button className='ml-[16px]'>
+                  <span className='mr-[8px]'> <PlusIcon /></span> Add New
+                </Button>
+              </Link>              
 
-              <span className='mr-[8px]'><FilterIcon /></span>
-              Filters
-            </button>
-            <Button className='ml-[16px]'><span className='mr-[8px]'> <PlusIcon /></span> Add New</Button>
+            </div>
           </div>
-        </div>
-        <div className="w-full max-sm:w-full border-b-2 border-gray-200 mb-4"></div>
+          <div className="w-full max-sm:w-full border-b-2 border-gray-200 mb-4"></div>
       
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead className='bg-[#EAECF0]'>
-              <tr className="">
-                <th className="py-2 px-3 text-left">
-                  <input
-                    type="checkbox"
-                    checked={isAllSelected}
-                    onChange={toggleAllSelection}
-                    className="form-checkbox"
-                  />
-                </th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Mediator Name</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Beneficiary Name</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Idioma</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Origin Country</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Full Address</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Meeting Object</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Meeting Objective</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Time & Date</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Status</th>
-                <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {eventData.map((event) => (
-                <tr key={event.id} className="border-b">
-                  <td className="py-2 px-3">
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead className='bg-[#EAECF0]'>
+                <tr className="">
+                  <th className="py-2 px-3 text-left">
                     <input
                       type="checkbox"
-                      checked={selectedEvents.includes(event.id)}
-                      onChange={() => toggleEventSelection(event.id)}
+                      checked={isAllSelected}
+                      onChange={toggleAllSelection}
                       className="form-checkbox"
                     />
-                  </td>
-                  <td className="py-2 px-3 font-bold">{event.mediatorName}</td>
-                  <td className="py-2 px-3 font-inter text-[14px] text-[var(--lightTextGray)]">{event.beneficiaryName}</td>
-                  <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.idioma}</td>
-                  <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.originCountry}</td>
-                  <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.fullAddress}</td>
-                  <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.meetingObject}</td>
-                  <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.meetingObjective}</td>
-                  <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.timeDate}</td>
-                  <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">
-                    <span className={`flex px-2 py-1 rounded-full text-xs ${event.status === 'Online' ? 'bg-green-200 font-bold text-green-900' : ' font-bold bg-[#F2F4F7] text-[#364254]'}`}>
-                      <span className='mr-2 mt-[5px] pl-1'>{event.status === 'Online' ? <GreenCircleIcon /> : <GrayCircleIcon />}</span>  {event.status}
-                    </span>
-                  </td>
-                  <td className="py-2 px-3">
-                    <button className="text-gray-500">
-                      <ThreeDots />
-                    </button>
-                  </td>
+                  </th>
+                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Summary</th>
+                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Location</th>
+                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Start Time</th>
+                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">End Time</th>
+                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Attendees</th>
+                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Status</th>
+                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {eventData.map((event) => (
+                  <tr key={event.id} className="border-b">
+                    <td className="py-2 px-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedEvents.includes(event.id)}
+                        onChange={() => toggleEventSelection(event.id)}
+                        className="form-checkbox"
+                      />
+                    </td>
+                    <td className="py-2 px-3 font-inter text-[14px] text-[var(--lightTextGray)]">{event.summary}</td>
+                    <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.location}</td>
+                    <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.start}</td>
+                    <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.end}</td>
+                    <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.attendees}</td>
+                    <td className="py-2 px-3">
+                      <span className={`flex px-2 py-1 rounded-full text-xs ${event.is_confirmed ? 'bg-green-200 font-bold text-green-900' : ' font-bold bg-[#F2F4F7] text-[#364254]'}`}>
+                        <span className='mr-2 mt-[5px] pl-1'>{event.is_confirmed ? <GreenCircleIcon /> : <GrayCircleIcon />}</span>  {event.is_confirmed ? 'Confirmed' : 'Pending'}
+                      </span>
+                    </td>
+                    <td className="py-2 px-3">
+                      <button className="text-gray-500">
+                        <ThreeDots />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );
 };
 
 export default EventManagementPage;
+
+

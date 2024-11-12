@@ -1,6 +1,6 @@
 import React from 'react';
 import TaskList from '../taskList/TaskList';
-import { TeamManagementIcon } from '../../assets/TeamManagementIcon';
+import { AgenciesManagementIcon } from '../../assets/TeamManagementIcon';
 import { EditIcon } from '../../assets/EditIcon';
 
 const TeamCard = ({
@@ -20,7 +20,7 @@ const TeamCard = ({
     return (
         <div className="max-w-[85%] mx-auto bg-[var(--cardTeamBg)] rounded-lg shadow-lg p-5">
             <div className='flex justify-center'>
-                <span className='mr-4 mt-1'><TeamManagementIcon color={'#03045E'} /></span>
+                <span className='mr-4 mt-1'><AgenciesManagementIcon color={'#03045E'} /></span>
                 <h2 className="text-2xl font-bold text-[var(--darkBlue)] font-[Nunito] mb-4 text-center">Team {teamNumber} Details</h2>
                 <div className='mt-1 ml-4'><EditIcon /></div>
             </div>
