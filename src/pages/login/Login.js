@@ -5,6 +5,9 @@ import KeyIcon from "../../assets/KeyIcon";
 import EyeIcon from "../../assets/EyeIcon";
 import { login } from '../../components/api/Authenticate';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { API_Base } from "../../components/api/config";
+
 
 const Login = () => {
   const [email, setEmail] = useState(''); // State for email input
@@ -12,34 +15,62 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
   const navigate = useNavigate();
 
-
-  const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent form from submitting the default way
+  const API = API_Base;
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
 
     try {
-      const response = await login(email, password); // Call login API
+      const response = await axios.post(
+        `${API}`, // Replace with your actual login API endpoint
+        {
+          email,
+          password
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
-      console.log("Login response:", response);
-
-      //check response status is success
-      if (response.status !== "success") {
-        throw new Error("Login failed");
-      }
-
-      //Redirect to the dashboard page
       navigate('/dashboard');
-      
+      // If login is successful, handle success
+      console.log('Response:', response.data);
+      const { user_group, access } = response.data;
 
-
-
-
-    } catch (error) {
-      console.error("Login failed:", error);
-      // Error is already handled in the login function
-      alert("Login failed. Please check your email and password.");
-
+      // Store the values in sessionStorage
+      sessionStorage.setItem('user_group', user_group);
+      sessionStorage.setItem('access_token', access);
+    } catch (err) {
+      // If login fails, handle the error
+      console.error('Error:', err.response ? err.response.data : err.message);
     }
   };
+
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault(); // Prevent form from submitting the default way
+
+  //   try {
+  //     const response = await login(email, password); // Call login API
+
+  //     console.log("Login response:", response);
+
+  //     //check response status is success
+  //     if (response.status !== "success") {
+  //       throw new Error("Login failed");
+  //     }
+
+  //     //Redirect to the dashboard page
+  //     navigate('/dashboard');
+
+  //   } catch (error) {
+  //     console.error("Login failed:", error);
+  //     // Error is already handled in the login function
+  //     alert("Login failed. Please check your email and password.");
+
+  //   }
+  // };
 
   return (
     <div
@@ -58,7 +89,7 @@ const Login = () => {
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <EmailIcon />
               </div>
-              <input 
+              <input
                 type="email"
                 name="email"
                 id="email"
@@ -75,11 +106,11 @@ const Login = () => {
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <KeyIcon />
               </div>
-              <input 
-                type={showPassword ? "text" : "password"} 
-                name="password" 
-                id="password" 
-                placeholder="Password" 
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                id="password"
+                placeholder="Password"
                 value={password} // Bind to password state
                 onChange={(e) => setPassword(e.target.value)} // Update password state
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-[20px] focus:ring-blue-500 focus:border-blue-500"
@@ -103,8 +134,8 @@ const Login = () => {
 
             {/* Login Button */}
             <div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-[20px] text-white bg-[var(--darkBlue)] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Log in

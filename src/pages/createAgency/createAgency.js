@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../../components/sideBar/SideBar';
 import InputField from '../../components/inputField/InputField';
 import { ChevronDown } from 'lucide-react';
 import Calendar from '../../components/calendar/Calendar';
 import { createAgency } from '../../components/api/Agency';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
   <div className="mb-3">
@@ -14,8 +16,11 @@ const DropdownSelect = ({ label, options, value, onChange, name }) => (
         value={value}
         onChange={(e) => onChange(e, name)}  // Pass name to onChange handler
       >
+        {/* Placeholder option */}
+        <option value="">Select</option>
+
         {options.map((option, index) => (
-          <option key={index} value={option}>{option}</option>
+          <option key={index} value={option.value}>{option.label}</option>
         ))}
       </select>
       <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -25,38 +30,125 @@ const DropdownSelect = ({ label, options, value, onChange, name }) => (
 
 
 const CreateAgency = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  // Get token from session storage
+  const token = sessionStorage.getItem('access_token');
+  const navigate = useNavigate();
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [chosenDate, setChosenDate] = useState(null);
+  // State variables
+  const [selectedUserId, setSelectedUserId] = useState('');
   const [agencyData, setAgencyData] = useState({
     company_name: '',
-    type: 'NPO',
-    email: '',
-    phone: '',
-    postal_code: '',
-    address: '',
-    city: '',
-    country: ' ',
-    iban: '',
-    vat_number: '',
-    fiscal_code: '',
-    bank_name: ' ',
-    payment_frequency: '',
-    date_begin: '',
-    date_end: '',
-    idioma: ' ',
-    event_rate: ' ',
+    company_type: 'agency',
+    manager: selectedUserId, // Initially manager is empty, we'll update it when a user is selected
+    agency: 6, // Assuming agency is fixed at 6
   });
+  const [members, setMembers] = useState([]);
 
-  const handleChange = (e, name) => {
-    const { value } = e.target;
+  // Fetch available members from API
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/available_members/?type=agency', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setMembers(response.data);  // Store the members in the state
+      } catch (error) {
+        console.error('Error fetching members:', error.response ? error.response.data : error.message);
+      }
+    };
+
+    fetchMembers();
+  }, [token]); // Only run once on mount
+
+  // Handle user selection from dropdown
+  const handleUserSelect = (e) => {
+    const selectedId = e.target.value;
+    setSelectedUserId(selectedId);
+    setAgencyData((prevData) => ({ ...prevData, manager: selectedId }));
+  };
+
+  // Handle changes to the agency type (NPO or Agency)
+  const handleAgencyTypeChange = (e) => {
+    const selectedType = e.target.value;
+    setAgencyData((prevData) => ({ ...prevData, company_type: selectedType }));
+  };
+
+  // Handle input changes for company name
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setAgencyData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
+
+  // Send POST request to create the agency
+  const createAgency = async () => {
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/npo_agency/',
+        agencyData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log('Agency created:', response.data);
+      navigate('/agencies')
+      alert('Agency Created Sucessfully')
+    } catch (error) {
+      console.error('Error posting agency data:', error.response ? error.response.data : error.message);
+    }
+  };
+
+  // Handle form submit
+  const handleSubmit = () => {
+    createAgency();
+  };
+
+  // Map members to options for the user dropdown
+  const userOptions = members.map((member) => ({
+    label: member.username, // Display the username
+    value: member.user_id, // Use user_id as the value
+  }));
+
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [chosenDate, setChosenDate] = useState(null);
+  // const [agencyData, setAgencyData] = useState({
+  //   company_name: '',
+  //   type: 'NPO',
+  //   email: '',
+  //   phone: '',
+  //   postal_code: '',
+  //   address: '',
+  //   city: '',
+  //   country: ' ',
+  //   iban: '',
+  //   vat_number: '',
+  //   fiscal_code: '',
+  //   bank_name: ' ',
+  //   payment_frequency: '',
+  //   date_begin: '',
+  //   date_end: '',
+  //   idioma: ' ',
+  //   event_rate: ' ',
+  // });
+
+
+  // const handleChange = (e, name) => {
+  //   const { value } = e.target;
+  //   setAgencyData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value
+  //   }));
+  // };
 
   const handleCreateAgency = async () => {
     const filteredData = Object.fromEntries(
@@ -81,8 +173,33 @@ const CreateAgency = () => {
 
         <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
-            <InputField label="Company Name" placeholder="Enter company name" name="company_name" value={agencyData.company_name} onChange={(e) => handleChange(e, 'company_name')} />
-            <DropdownSelect label="Select NPO/Agency" options={['NPO', 'Agency']} value={agencyData.type} onChange={handleChange} name="type" />
+            <InputField
+              label="Company Name"
+              placeholder="Enter company name"
+              name="company_name"
+              value={agencyData.company_name}
+              onChange={handleChange}
+            />
+
+            <DropdownSelect
+              label="Select User"
+              options={userOptions}
+              value={selectedUserId}
+              onChange={handleUserSelect}
+              name="user_id"
+            />
+
+            <DropdownSelect
+              label="Select NPO/Agency"
+              options={[
+                { label: 'Agency', value: 'agency' },
+                { label: 'NPO', value: 'npo' },
+              ]}
+              value={agencyData.company_type}
+              onChange={handleAgencyTypeChange}
+              name="company_type"
+            />
+
             <InputField label="Email" placeholder="Enter email" type="email" name="email" value={agencyData.email} onChange={(e) => handleChange(e, 'email')} />
             <InputField label="Contact Number" placeholder="Enter contact number" type="tel" name="phone" value={agencyData.phone} onChange={(e) => handleChange(e, 'phone')} />
             <InputField label="Postal Code" placeholder="Enter postal code" name="postal_code" value={agencyData.postal_code} onChange={(e) => handleChange(e, 'postal_code')} />
@@ -97,24 +214,29 @@ const CreateAgency = () => {
             <DropdownSelect label="Date Begin" options={['Option 1', 'Option 2']} value={agencyData.date_begin} onChange={handleChange} name="date_begin" />
             <DropdownSelect label="Date Ending" options={['Option 1', 'Option 2']} value={agencyData.date_end} onChange={handleChange} name="date_end" />
             <DropdownSelect label="Select Main Idioma" options={['Language 1', 'Language 2']} value={agencyData.idioma} onChange={handleChange} name="idioma" />
+            <div className="flex justify-center gap-4 pb-4">
+              <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">
+                Create Details
+              </button>
+            </div>
           </div>
 
-          <div className="lg:col-span-4 lg:flex-row justify-between items-start lg:items-center">
+          {/* <div className="lg:col-span-4 lg:flex-row justify-between items-start lg:items-center">
             <DropdownSelect label="Event Rate" options={['Rate 1', 'Rate 2']} value={agencyData.event_rate} onChange={handleChange} name="event_rate" />
-            <Calendar 
-              selectedDate={selectedDate} 
-              setSelectedDate={setSelectedDate} 
-              chosenDate={chosenDate} 
-              setChosenDate={setChosenDate} 
+            <Calendar
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              chosenDate={chosenDate}
+              setChosenDate={setChosenDate}
             />
-          </div>
+          </div> */}
         </div>
 
-        <div className="mt-auto">
+        {/* <div className="mt-auto">
           <div className="flex justify-center gap-4 pb-4">
-            <button onClick={handleCreateAgency} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Details</button>
+            <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Details</button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
