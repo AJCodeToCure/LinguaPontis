@@ -23,7 +23,7 @@ function CreateUser() {
     const fetchPermissionGroups = async () => {
         try {
             const response = await axios.get(
-                'http://127.0.0.1:8000/api/permission_group/',  // API endpoint
+                'https://sincroteam-0592ac56319d.herokuapp.com/api/permission_group/',  // API endpoint
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Add Bearer token in the headers
@@ -91,7 +91,7 @@ function CreateUser() {
 
         try {
             const response = await axios.post(
-                'http://127.0.0.1:8000/api/generate_user/',
+                'https://sincroteam-0592ac56319d.herokuapp.com/api/generate_user/',
                 payload,
                 {
                     headers: {

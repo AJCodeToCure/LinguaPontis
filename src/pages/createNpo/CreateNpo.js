@@ -47,7 +47,7 @@ function CreateNpo() {
     useEffect(() => {
         const fetchMembers = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/available_members/?type=npo', {
+                const response = await axios.get('https://sincroteam-0592ac56319d.herokuapp.com/api/available_members/?type=npo', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -87,7 +87,7 @@ function CreateNpo() {
     const createNpo = async () => {
         try {
             const response = await axios.post(
-                'http://127.0.0.1:8000/api/npo_agency/',
+                'https://sincroteam-0592ac56319d.herokuapp.com/api/npo_agency/',
                 agencyData,
                 {
                     headers: {

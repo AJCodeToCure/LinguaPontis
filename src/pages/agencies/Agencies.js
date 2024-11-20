@@ -22,7 +22,7 @@ const Agencies = () => {
   useEffect(() => {
     const fetchAgencies = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/get_agencies/', {
+        const response = await axios.get('https://sincroteam-0592ac56319d.herokuapp.com/api/get_agencies/', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -62,7 +62,7 @@ const Agencies = () => {
   const handleDelete = async (agencyId) => {
     try {
       // Perform the DELETE request
-      await axios.delete(`http://127.0.0.1:8000/api/get_agencies/${agencyId}/`, {
+      await axios.delete(`https://sincroteam-0592ac56319d.herokuapp.com/api/get_agencies/${agencyId}/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

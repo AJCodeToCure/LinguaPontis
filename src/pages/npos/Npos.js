@@ -22,7 +22,7 @@ function Npos() {
     useEffect(() => {
         const fetchNpos = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/get_npos/', {
+                const response = await axios.get('https://sincroteam-0592ac56319d.herokuapp.com/api/get_npos/', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -40,7 +40,7 @@ function Npos() {
     const handleDelete = async (agencyId) => {
         try {
             // Perform the DELETE request
-            await axios.delete(`http://127.0.0.1:8000/api/get_npos/${agencyId}/`, {
+            await axios.delete(`https://sincroteam-0592ac56319d.herokuapp.com/api/get_npos/${agencyId}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

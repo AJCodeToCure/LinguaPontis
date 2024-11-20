@@ -48,7 +48,7 @@ const CreateAgency = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/available_members/?type=agency', {
+        const response = await axios.get('https://sincroteam-0592ac56319d.herokuapp.com/api/available_members/?type=agency', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -88,7 +88,7 @@ const CreateAgency = () => {
   const createAgency = async () => {
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/api/npo_agency/',
+        'https://sincroteam-0592ac56319d.herokuapp.com/api/npo_agency/',
         agencyData,
         {
           headers: {

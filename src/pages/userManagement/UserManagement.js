@@ -32,7 +32,7 @@ function UserManagement() {
         try {
             // Make the GET request with Bearer token
             const response = await axios.get(
-                "http://127.0.0.1:8000/api/all_members/",
+                "https://sincroteam-0592ac56319d.herokuapp.com/api/all_members/",
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ function UserManagement() {
     const handleDeactivate = async (agencyId) => {
         try {
             // Make the DELETE request to deactivate the agency
-            await axios.delete(`http://127.0.0.1:8000/api/delete_user/${agencyId}/`, {
+            await axios.delete(`https://sincroteam-0592ac56319d.herokuapp.com/api/delete_user/${agencyId}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,  // Include the token in headers
                 },
