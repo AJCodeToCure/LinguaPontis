@@ -3,6 +3,7 @@ import { Sidebar } from '../../components/sideBar/SideBar';
 import InputField from '../../components/inputField/InputField';
 import { ChevronDown } from 'lucide-react';
 import axios from 'axios';
+import { API_Base } from '../../components/api/config';
 import { useNavigate } from 'react-router-dom';
 
 function CreateUser() {
@@ -18,12 +19,13 @@ function CreateUser() {
     const token = sessionStorage.getItem('access_token');
     // console.log(token);
     const navigate = useNavigate();
+    const API = API_Base;
 
     // Fetch permission groups from the API
     const fetchPermissionGroups = async () => {
         try {
             const response = await axios.get(
-                'https://sincroteam-0592ac56319d.herokuapp.com/api/permission_group/',  // API endpoint
+                `${API}/api/permission_group/`,  // API endpoint
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Add Bearer token in the headers
@@ -91,7 +93,7 @@ function CreateUser() {
 
         try {
             const response = await axios.post(
-                'https://sincroteam-0592ac56319d.herokuapp.com/api/generate_user/',
+                `${API}/api/generate_user/`,
                 payload,
                 {
                     headers: {
@@ -107,6 +109,7 @@ function CreateUser() {
             navigate('/users-management');
         } catch (error) {
             console.error('Error generating user:', error.response ? error.response.data : error.message);
+            alert('Error generating user');
         }
     };
 
@@ -181,11 +184,11 @@ function CreateUser() {
                     </div>
                 </div>
 
-                <div className="mt-auto">
+                {/* <div className="mt-auto">
                     <div className="flex justify-center gap-4 pb-4">
                         <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create</button>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     )

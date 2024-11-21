@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../../components/sideBar/SideBar';
 import InputField from '../../components/inputField/InputField';
 import { ChevronDown } from 'lucide-react';
-import Calendar from '../../components/calendar/Calendar';
-import { createAgency } from '../../components/api/Agency';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
@@ -14,12 +13,13 @@ const DropdownSelect = ({ label, options, value, onChange, name }) => (
         <div className="relative">
             <select
                 className="w-full p-2 border border-[var(--borderColor)] text-[var(--darkText)] font-semibold rounded-[12px] bg-white text-left flex items-center justify-between px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-                value={value}
-                onChange={(e) => onChange(e, name)}  // Pass name to onChange handler
+                value={value} // Value reflects the current state
+                onChange={(e) => onChange(e, name)} // Pass name to onChange handler
             >
                 {/* Placeholder option */}
                 <option value="">Select</option>
 
+                {/* Map through options and render each one */}
                 {options.map((option, index) => (
                     <option key={index} value={option.value}>{option.label}</option>
                 ))}
@@ -345,19 +345,20 @@ const languageOptions = countries.map(language => ({
     label: language,  // Label is also the country name
 }));
 
-
-const CreateNpo = () => {
-    // Get token from session storage
+function ModifyNpo() {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const token = sessionStorage.getItem('access_token');
     const navigate = useNavigate();
+    const { id } = useParams();
+    const API = API_Base;
 
-    // State variables
     const [selectedUserId, setSelectedUserId] = useState('');
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("");
     const [agencyData, setAgencyData] = useState({
         company_name: '',
-        company_type: 'npo',
+        company_type: 'agency',
         manager: selectedUserId,
         agency: 6,
         email: '',
@@ -378,32 +379,57 @@ const CreateNpo = () => {
         main_idioma: '',
     });
     const [members, setMembers] = useState([]);
-    const API = API_Base;
 
-    // Fetch available members from API
-    useEffect(() => {
-        const fetchMembers = async () => {
-            try {
-                const response = await axios.get(`${API}/api/available_members/?type=npo`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-                setMembers(response.data);  // Store the members in the state
-            } catch (error) {
-                console.error('Error fetching members:', error.response ? error.response.data : error.message);
-            }
-        };
+    const fetchNpo = async () => {
+        try {
+            const response = await axios.get(`${API}/api/get_npos/?npo_id=${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const agencyData = response.data.find((agency) => Number(agency.id) === Number(id));
 
-        fetchMembers();
-    }, [token]); // Only run once on mount
+            // console.log('All Data', JSON.stringify(response.data, null, 2));
+            console.log('Data' + agencyData);
 
-    // Handle user selection from dropdown
-    const handleUserSelect = (e) => {
-        const selectedId = e.target.value;
-        setSelectedUserId(selectedId);
-        setAgencyData((prevData) => ({ ...prevData, manager: selectedId }));
+
+
+            // console.log('Company Name' + agencyData.company_name);
+
+            setAgencyData({
+                company_name: agencyData.company_name || '',
+                company_type: agencyData.company_type || '',
+                created_at: agencyData.created_at || '',
+                updated_at: agencyData.updated_at || '',
+                created_by_group: agencyData.created_by_group || '',
+                address: agencyData.address || '',
+                country: agencyData.country || '',
+                city: agencyData.city || '',
+                postal_code: agencyData.postal_code || '',
+                date_begin: agencyData.date_begin || '',
+                date_ending: agencyData.date_ending || '',
+                email: agencyData.email || '',
+                phone: agencyData.phone || '',
+                iban: agencyData.iban || '',
+                bank: agencyData.bank || '',
+                payment_frequency: agencyData.payment_frequency || '',
+                vat_num: agencyData.vat_num || '',
+                fiscal_code: agencyData.fiscal_code || '',
+                contact: agencyData.contact || '',
+                event_rate: agencyData.event_rate || '',
+                main_idioma: agencyData.main_idioma || '',
+                created_by: agencyData.created_by || '',
+                manager: agencyData.manager || '',
+            });
+        } catch (error) {
+            console.error('Error fetching agency:', error.response ? error.response.data : error.message);
+        }
     };
+
+    // Call the fetchAgency function when the component mounts or when the `id` changes
+    useEffect(() => {
+        fetchNpo();
+    }, [id]);
 
     const handleCountrySelect = (e) => {
         const { value } = e.target;  // Get the selected country's name from the event
@@ -422,11 +448,6 @@ const CreateNpo = () => {
         }));
     };
 
-    // Handle changes to the agency type (NPO or Agency)
-    const handleAgencyTypeChange = (e) => {
-        const selectedType = e.target.value;
-        setAgencyData((prevData) => ({ ...prevData, company_type: selectedType }));
-    };
 
     // Handle input changes for company name
     const handleChange = (e) => {
@@ -438,10 +459,10 @@ const CreateNpo = () => {
     };
 
     // Send POST request to create the agency
-    const createNpo = async () => {
+    const updateNpo = async () => {
         try {
-            const response = await axios.post(
-                `${API}/api/npo_agency/`,
+            const response = await axios.put(
+                `${API}/api/get_npos/${id}/`,
                 agencyData,
                 {
                     headers: {
@@ -452,16 +473,15 @@ const CreateNpo = () => {
             );
             console.log('Agency created:', response.data);
             navigate('/npos')
-            alert('Mpo Created Sucessfully')
+            alert('Npo Updated Sucessfully')
         } catch (error) {
             console.error('Error posting agency data:', error.response ? error.response.data : error.message);
-            alert('* Fields cannot be empty')
         }
     };
 
     // Handle form submit
     const handleSubmit = () => {
-        createNpo();
+        updateNpo();
     };
 
     // Map members to options for the user dropdown
@@ -470,91 +490,31 @@ const CreateNpo = () => {
         value: member.user_id, // Use user_id as the value
     }));
 
-
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [chosenDate, setChosenDate] = useState(null);
-    // const [agencyData, setAgencyData] = useState({
-    //   company_name: '',
-    //   type: 'NPO',
-    //   email: '',
-    //   phone: '',
-    //   postal_code: '',
-    //   address: '',
-    //   city: '',
-    //   country: ' ',
-    //   iban: '',
-    //   vat_number: '',
-    //   fiscal_code: '',
-    //   bank_name: ' ',
-    //   payment_frequency: '',
-    //   date_begin: '',
-    //   date_end: '',
-    //   idioma: ' ',
-    //   event_rate: ' ',
-    // });
-
-
-    // const handleChange = (e, name) => {
-    //   const { value } = e.target;
-    //   setAgencyData((prevData) => ({
-    //     ...prevData,
-    //     [name]: value
-    //   }));
-    // };
-
-    const handleCreateAgency = async () => {
-        const filteredData = Object.fromEntries(
-            Object.entries(agencyData).filter(([_, value]) => value !== '')
-        );
-
-        try {
-            const response = await createAgency(filteredData);
-            alert("Agency created successfully!");
-            console.log(response);
-        } catch (error) {
-            console.error("Error creating agency:", error);
-            alert("Error creating agency", error);
-        }
-    };
-
     return (
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
-                <h1 className="text-2xl mt-10 font-bold mb-2">Npo Details</h1>
-                <h1 className="mb-6">* Mandatory Fields</h1>
+                <h1 className="text-2xl mt-10 font-bold">Update Npo</h1>
 
-                <div className="grid mt-2 w-full lg:grid-cols-12 gap-x-6">
+                <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
                         <InputField
-                            label="Company Name *"
+                            label="Company Name"
                             placeholder="Enter company name"
                             name="company_name"
                             value={agencyData.company_name}
                             onChange={handleChange}
+                            disabled
                         />
-
-                        <DropdownSelect
-                            label="Select User *"
-                            options={userOptions}
-                            value={selectedUserId}
-                            onChange={handleUserSelect}
-                            name="user_id"
-                        />
-
-                        <DropdownSelect
-                            label="Select NPO/Agency *"
-                            options={[
-                                { label: 'Agency', value: 'agency' },
-                                { label: 'NPO', value: 'npo' },
-                            ]}
-                            value={agencyData.company_type}
-                            onChange={handleAgencyTypeChange}
+                        <InputField
+                            label="Selected NPO/Agency"
+                            placeholder="Enter company name"
                             name="company_type"
+                            value={agencyData.company_type}
+                            onChange={handleChange}
+                            disabled
                         />
-
                         <InputField label="Email" placeholder="Enter email" type="email" name="email" value={agencyData.email} onChange={(e) => handleChange(e, 'email')} />
                         <InputField label="Contact Number" placeholder="Enter contact number" type="tel" name="phone" value={agencyData.phone} onChange={(e) => handleChange(e, 'phone')} />
                         <InputField label="Postal Code" placeholder="Enter postal code" name="postal_code" value={agencyData.postal_code} onChange={(e) => handleChange(e, 'postal_code')} />
@@ -563,7 +523,7 @@ const CreateNpo = () => {
                         <DropdownSelect
                             label="Select Country"        // Label for the dropdown
                             options={countryOptions}       // The country options passed to the dropdown
-                            value={selectedCountry}        // The selected country value from state
+                            value={selectedCountry || agencyData.country}        // The selected country value from state
                             onChange={handleCountrySelect} // Handler to update state on country change
                             name="country"                 // Name of the field for form submission
                         />
@@ -576,52 +536,54 @@ const CreateNpo = () => {
                             value={agencyData.bank}  // Bind value to agencyData.bank
                             onChange={(e) => handleChange(e, 'bank')}  // Update state when the value changes
                         />
+                        {/* <DropdownSelect label="Select Bank Name" options={['Bank 1', 'Bank 2']} value={agencyData.bank_name} onChange={handleChange} name="bank_name" /> */}
                         <InputField label="Fiscal Code" placeholder="Enter fiscal code" name="fiscal_code" value={agencyData.fiscal_code} onChange={(e) => handleChange(e, 'fiscal_code')} />
                         <InputField label="Payment Frequency" placeholder="Enter payment frequency" name="payment_frequency" value={agencyData.payment_frequency} onChange={(e) => handleChange(e, 'payment_frequency')} />
-                        {/* <DropdownSelect label="Date Begin" options={['Option 1', 'Option 2']} value={agencyData.date_begin} onChange={handleChange} name="date_begin" />
-            <DropdownSelect label="Date Ending" options={['Option 1', 'Option 2']} value={agencyData.date_end} onChange={handleChange} name="date_end" /> */}
-                        <InputField
+                        {/* <DropdownSelect label="Date Begin" options={['Option 1', 'Option 2']} value={agencyData.date_begin} onChange={handleChange} name="date_begin" /> */}
+                        {/* <InputField
                             label="Date Begin"
                             placeholder="Select date"
                             name="date_begin"
                             value={agencyData.date_begin}
                             onChange={(e) => handleChange(e, 'date_begin')}
                             type="date" // Setting the type as 'date' to show a date picker
-                        />
-                        {/* <DropdownSelect label="Select Main Idioma" options={['Language 1', 'Language 2']} value={agencyData.idioma} onChange={handleChange} name="idioma" /> */}
+                        /> */}
+                        {/* <DropdownSelect label="Date Ending" options={['Option 1', 'Option 2']} value={agencyData.date_end} onChange={handleChange} name="date_end" /> */}
+                        {/* <DropdownSelect label="Select Main Idioma" options={['Language 1', 'Language 2']} value={agencyData.main_idioma} onChange={handleChange} name="idioma" />
+               */}
                         <DropdownSelect
                             label="Select Idioma"        // Label for the dropdown
                             options={languageOptions}       // The country options passed to the dropdown
-                            value={selectedLanguage}        // The selected country value from state
+                            value={selectedLanguage || agencyData.main_idioma}        // The selected country value from state
                             onChange={handleLanguageSelect} // Handler to update state on country change
                             name="idioma"                 // Name of the field for form submission
                         />
                         <div className="flex justify-center gap-4 pb-4">
                             <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">
-                                Create Details
+                                Update
                             </button>
                         </div>
                     </div>
 
                     {/* <div className="lg:col-span-4 lg:flex-row justify-between items-start lg:items-center">
-            <DropdownSelect label="Event Rate" options={['Rate 1', 'Rate 2']} value={agencyData.event_rate} onChange={handleChange} name="event_rate" />
-            <Calendar
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              chosenDate={chosenDate}
-              setChosenDate={setChosenDate}
-            />
-          </div> */}
+              <DropdownSelect label="Event Rate" options={['Rate 1', 'Rate 2']} value={agencyData.event_rate} onChange={handleChange} name="event_rate" />
+              <Calendar
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                chosenDate={chosenDate}
+                setChosenDate={setChosenDate}
+              />
+            </div> */}
                 </div>
 
                 {/* <div className="mt-auto">
-          <div className="flex justify-center gap-4 pb-4">
-            <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Details</button>
-          </div>
-        </div> */}
+            <div className="flex justify-center gap-4 pb-4">
+              <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Details</button>
+            </div>
+          </div> */}
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default CreateNpo;
+export default ModifyNpo

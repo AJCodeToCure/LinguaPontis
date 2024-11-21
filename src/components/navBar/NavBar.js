@@ -1,14 +1,43 @@
 // Navbar Component
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NotificationIcon } from '../../assets/NotificationIcon';
 // import MagnifyingIcons from '../../assets/MagnifyingIcons'
 import { MagnifyingIcons } from '../../assets/MagnifyingIcons';
 import VerticalBar from '../../assets/VerticalBar';
 import { CustomCalendarIcon } from '../../assets/CustomCalendarIcon';
 import UserPfp from "../../assets/images/userpfp.png"
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { API_Base } from '../api/config';
 
 
 export const Navbar = (props) => {
+  const navigate = useNavigate();
+  const token = sessionStorage.getItem('access_token');
+  const [userData, setUserData] = useState();
+  const API = API_Base;
+
+  const handleUpdate = () => {
+    navigate('/update-user')
+  }
+
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get(`${API}/api/update_profile/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      setUserData(response.data);  // Store the members in the state
+
+    } catch (error) {
+      console.error('Error fetching members:', error.response ? error.response.data : error.message);
+    }
+  };
+  useEffect(() => {
+    fetchUser();
+  }, [])
+
   return (
     <header className="bg-white shadow-md">
       <div className="flex items-center justify-between p-4">
@@ -29,25 +58,31 @@ export const Navbar = (props) => {
             />
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"> <MagnifyingIcons /></div>
           </div>
-         <span className='max-sm:hidden'> <VerticalBar  /></span>
+          <span className='max-sm:hidden'> <VerticalBar /></span>
 
-         <span className='flex gap-x-4 max-sm:justify-between max-sm:gap-x-5 max-sm:mt-5'>
-          <button className="p-3 rounded-full bg-[var(--darkBlue)] hover:bg-gray-300">
-            <CustomCalendarIcon className="w-5 h-5" />
-          </button>
-          <button className="p-3 rounded-full bg-[var(--darkBlue)] hover:bg-gray-300">
-            <NotificationIcon className="w-5 h-5" />
-          </button>
-          <div className="flex items-center space-x-2">
-            {/* <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center"> */}
-            {/* <UserIcon className="w-5 h-5 text-gray-600" /> */}
-            <div>
-              <img className='w-[35px] h-[45px]' style={{ borderBottomLeftRadius: '100px', borderBottomRightRadius: "100px" }} src={UserPfp} />
+          <span className='flex gap-x-4 max-sm:justify-between max-sm:gap-x-5 max-sm:mt-5'>
+            <button className="p-3 rounded-full bg-[var(--darkBlue)] hover:bg-gray-300">
+              <CustomCalendarIcon className="w-5 h-5" />
+            </button>
+            <button className="p-3 rounded-full bg-[var(--darkBlue)] hover:bg-gray-300">
+              <NotificationIcon className="w-5 h-5" />
+            </button>
+            <div className="flex items-center space-x-2">
+              {/* <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center"> */}
+              {/* <UserIcon className="w-5 h-5 text-gray-600" /> */}
+              <div>
+                <button onClick={handleUpdate}>
+                  <img className='w-[35px] h-[45px]' style={{ borderBottomLeftRadius: '100px', borderBottomRightRadius: "100px" }} src={UserPfp} />
+                </button>
+              </div>
+              {/* <ProfileImageClip imageUrl={UserPfp}/> */}
+              {/* </div> */}
+              
+              <span onClick={handleUpdate} className="text-sm font-medium cursor-pointer" style={{ lineHeight: '15px' }}>{userData?.first_name}<br></br>{userData?.last_name}</span>
+              {/* <span className="text-sm font-medium" style={{ lineHeight: '15px' }}>
+                <button onClick={handleUpdate}></button>
+              </span> */}
             </div>
-            {/* <ProfileImageClip imageUrl={UserPfp}/> */}
-            {/* </div> */}
-            <span className="text-sm font-medium" style={{ lineHeight: '15px' }}>Agency<br></br>@mail</span>
-          </div>
           </span>
         </div>
       </div>

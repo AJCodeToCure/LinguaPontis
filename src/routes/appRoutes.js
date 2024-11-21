@@ -18,6 +18,11 @@ import UserManagement from '../pages/userManagement/UserManagement';
 import CreateUser from '../pages/createUser/CreateUser';
 import Npos from '../pages/npos/Npos';
 import CreateNpo from '../pages/createNpo/CreateNpo';
+import ModifyAgency from '../pages/createAgency/modifyAgency';
+import ModifyNpo from '../pages/createNpo/ModifyNps';
+import UpdateUser from '../pages/agencyUser/UpdateUser';
+import AgencyNpos from '../pages/npos/AgencyNpos';
+import ChangePassword from '../pages/agencyUser/ChangePassword';
 
 const AppRoutes = () => {
   return (
@@ -29,8 +34,13 @@ const AppRoutes = () => {
         <Route path="/agency-management" element={<AgencyManagement />} />
         <Route path="/agencies" element={<Agencies />} />
         <Route path="/npos" element={<Npos />} />
+        <Route path="/modify-agency/:id" element={<ModifyAgency />} />
+        <Route path="/modify-npo/:id" element={<ModifyNpo />} />
+        <Route path="/agency-npos/:id" element={<AgencyNpos />} />
 
         <Route path="/agency-user" element={<AgencyUser />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/update-user" element={<UpdateUser />} />
         <Route path="/event-management" element={<EventManagementPage />} />
         <Route path="/user-management" element={<agenciesManagement />} />
         <Route path="/beneficiary-management" element={<BeneficiaryManagement />} />

@@ -6,6 +6,7 @@ import { MagnifyingIcons } from "../../assets/MagnifyingIcons";
 import { fetchAgencies } from '../../components/api/Agency';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_Base } from '../../components/api/config';
 
 function UserManagement() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,6 +17,7 @@ function UserManagement() {
     const [agenciesData, setAgenciesData] = useState([]); // State to store agencies data
     const token = sessionStorage.getItem("access_token");
     const [deactivatedAgencies, setDeactivatedAgencies] = useState([]);
+    const API = API_Base;
 
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -32,7 +34,7 @@ function UserManagement() {
         try {
             // Make the GET request with Bearer token
             const response = await axios.get(
-                "https://sincroteam-0592ac56319d.herokuapp.com/api/all_members/",
+                `${API}/api/all_members/`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -55,7 +57,7 @@ function UserManagement() {
     const handleDeactivate = async (agencyId) => {
         try {
             // Make the DELETE request to deactivate the agency
-            await axios.delete(`https://sincroteam-0592ac56319d.herokuapp.com/api/delete_user/${agencyId}/`, {
+            await axios.delete(`${API}/api/delete_user/${agencyId}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,  // Include the token in headers
                 },

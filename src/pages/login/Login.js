@@ -22,7 +22,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        `${API}`, // Replace with your actual login API endpoint
+        `${API}/api/login/`, // Replace with your actual login API endpoint
         {
           email,
           password

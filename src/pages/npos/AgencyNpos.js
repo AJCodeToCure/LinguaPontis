@@ -7,14 +7,17 @@ import { fetchAgencies } from '../../components/api/Agency';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_Base } from '../../components/api/config';
+import { useParams } from 'react-router-dom';
 
-function Npos() {
+function AgencyNpos() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5); // Display 5 items per page
     const [selectedAgencies, setSelectedAgencies] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [agenciesData, setAgenciesData] = useState([]); // State to store agencies data
+    const { id } = useParams();
+
 
     const [npos, setNpos] = useState([]);
     const navigate = useNavigate();
@@ -24,19 +27,19 @@ function Npos() {
     useEffect(() => {
         const fetchNpos = async () => {
             try {
-                const response = await axios.get(`${API}/api/get_npos/`, {
+                const response = await axios.get(`${API}/api/get_agencies/?agency_id=${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-                setNpos(response.data); 
+                setNpos(response.data);
             } catch (error) {
                 console.error('Error fetching members:', error.response ? error.response.data : error.message);
             }
         };
 
         fetchNpos();
-    }, [token]); 
+    }, [token]); // Only run once on mount
 
     const handleModify = (id) => {
         navigate(`/modify-npo/${id}`); // Navigate to /modify-agency with the agency's ID
@@ -112,12 +115,12 @@ function Npos() {
                         <div className="flex justify-between items-center mb-6 max-sm:flex-col">
                             <h1 className="text-2xl font-semibold font-[Poppins]">All Npos Data</h1>
                             <div className="flex items-center max-sm:flex-col">
-                                <button
+                                {/* <button
                                     className="px-4 mr-2 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
-                                    onClick={() => navigate('/create-npo')}  // Directly call navigate in the onClick handler
+                                    onClick={() => navigate('/create-npo')} 
                                 >
                                     Create Npo
-                                </button>
+                                </button> */}
                                 <div className="relative mr-4 max-sm:mt-5 max-sm:mb-5">
                                     <input
                                         type="text"
@@ -160,52 +163,54 @@ function Npos() {
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {npos.map((agency) => (
-                                        <tr key={agency.id} className="hover:bg-gray-50 font-[Poppins] font-medium">
-                                            <td className="p-3">
-                                                <input
-                                                    type="checkbox"
-                                                    className="form-checkbox h-4 w-4 text-orange-600"
-                                                    checked={selectedAgencies.includes(agency.id)}
-                                                    onChange={() => toggleAgencySelection(agency.id)}
-                                                />
-                                            </td>
-                                            <td className="p-3">{agency.company_type}</td> {/* Agency Type */}
-                                            <td className="p-3">{agency.company_name}</td> {/* Agency Name */}
-                                            <td className="p-3">{agency.phone || 'N/A'}</td> {/* Assuming 'phone' exists or N/A */}
-                                            <td className="p-3">{agency.email || 'N/A'}</td> {/* Assuming 'email' exists or N/A */}
-                                            <td className="p-3">{agency.country || 'N/A'}</td> {/* Assuming 'country' exists or N/A */}
-                                            <td className="p-3">
-                                                <span
-                                                    className={`px-4 py-1 rounded-[8px] text-xs ${getStatus(agency) === 'Online'
-                                                        ? 'bg-green-200 text-green-800 border border-green-800'
-                                                        : 'bg-red-200 text-red-800 border border-red-900'
-                                                        }`}
-                                                >
-                                                    {getStatus(agency)} {/* Display the status */}
-                                                </span>
-                                            </td>
-                                            <td className="p-3">
-                                                <button
-                                                    onClick={() => handleDelete(agency.id)} // Trigger delete
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                    </svg>
-                                                </button>
-                                                <button className='ml-2' onClick={() => handleModify(agency.id)} // Pass agency.id to handleModify
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                                    </svg>
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        agency.npo.map((npo) => (  // Loop over each NPO in the agency's npo array
+                                            <tr key={npo.id} className="hover:bg-gray-50 font-[Poppins] font-medium">
+                                                <td className="p-3">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-checkbox h-4 w-4 text-orange-600"
+                                                        checked={selectedAgencies.includes(npo.id)}
+                                                        onChange={() => toggleAgencySelection(npo.id)}  // Toggle selection for the NPO
+                                                    />
+                                                </td>
+                                                <td className="p-3">{npo.company_type}</td> {/* NPO Type */}
+                                                <td className="p-3">{npo.company_name}</td> {/* NPO Name */}
+                                                <td className="p-3">{npo.phone || 'N/A'}</td> {/* Phone, if not available show 'N/A' */}
+                                                <td className="p-3">{npo.email || 'N/A'}</td> {/* Email, if not available show 'N/A' */}
+                                                <td className="p-3">{npo.country || 'N/A'}</td> {/* Country, if not available show 'N/A' */}
+                                                <td className="p-3">
+                                                    <span
+                                                        className={`px-4 py-1 rounded-[8px] text-xs ${getStatus(npo) === 'Online'
+                                                            ? 'bg-green-200 text-green-800 border border-green-800'
+                                                            : 'bg-red-200 text-red-800 border border-red-900'
+                                                            }`}
+                                                    >
+                                                        {getStatus(npo)} {/* Display the NPO status */}
+                                                    </span>
+                                                </td>
+                                                <td className="p-3">
+                                                    <button
+                                                        onClick={() => handleDelete(npo.id)}  // Trigger delete for NPO
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                        </svg>
+                                                    </button>
+                                                    <button className='ml-2' onClick={() => handleModify(npo.id)}>  {/* Pass npo.id to handleModify */}
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                        </svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
                                     ))}
+
                                 </tbody>
                             </table>
                         </div>
 
-                        {/* Pagination Section */}
+                        {/* Pagination Section
                         <div className="mt-4 flex justify-between items-center">
                             <p className="text-sm font-[Poppins] text-gray-600">
                                 Showing {indexOfFirstAgency + 1} to {Math.min(indexOfLastAgency, agenciesData.length)} of {agenciesData.length} entries
@@ -234,20 +239,7 @@ function Npos() {
                                     <ChevronRight size={20} />
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                    <div className="mt-10">
-                        <div className="flex justify-center gap-4 pb-4 max-sm:flex-col">
-                            {/* <button
-                                className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
-                            // Directly call navigate in the onClick handler
-                            >
-                                Create Details
-                            </button>
-                            <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Modify Details</button>
-                            <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">View Details</button> */}
-                            {/* <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-800">Delete</button> */}
-                        </div>
+                        </div> */}
                     </div>
                 </main>
             </div>
@@ -255,4 +247,4 @@ function Npos() {
     )
 }
 
-export default Npos
+export default AgencyNpos

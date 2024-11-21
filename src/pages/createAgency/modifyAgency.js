@@ -5,6 +5,7 @@ import { ChevronDown } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import { API_Base } from '../../components/api/config';
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
     <div className="mb-3">
@@ -344,13 +345,14 @@ const languageOptions = countries.map(language => ({
     label: language,  // Label is also the country name
 }));
 
-function modifyAgency() {
-    // Get token from session storage
+function ModifyAgency() {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const token = sessionStorage.getItem('access_token');
     const navigate = useNavigate();
     const { id } = useParams();
+    const API = API_Base;
 
-    // State variables
     const [selectedUserId, setSelectedUserId] = useState('');
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("");
@@ -378,25 +380,46 @@ function modifyAgency() {
     });
     const [members, setMembers] = useState([]);
 
-    // Fetch available members from API
     const fetchAgency = async () => {
         try {
-            const response = await axios.get(`https://sincroteam-0592ac56319d.herokuapp.com/api/get_agencies/?agency_id=${id}`, {
+            const response = await axios.get(`${API}/api/get_agencies/?agency_id=${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+            const agencyData = response.data.find((agency) => Number(agency.id) === Number(id));
 
-            // Assuming the response contains the agency data, update the state
-            const agencyData = response.data;
-            
+            // console.log('All Data', JSON.stringify(response.data, null, 2));
+            console.log('Data' + agencyData);
 
-            setAgency({
+
+
+            // console.log('Company Name' + agencyData.company_name);
+
+            setAgencyData({
                 company_name: agencyData.company_name || '',
                 company_type: agencyData.company_type || '',
-                phone: agencyData.phone || '',
-                email: agencyData.email || '',
+                created_at: agencyData.created_at || '',
+                updated_at: agencyData.updated_at || '',
+                created_by_group: agencyData.created_by_group || '',
+                address: agencyData.address || '',
                 country: agencyData.country || '',
+                city: agencyData.city || '',
+                postal_code: agencyData.postal_code || '',
+                date_begin: agencyData.date_begin || '',
+                date_ending: agencyData.date_ending || '',
+                email: agencyData.email || '',
+                phone: agencyData.phone || '',
+                iban: agencyData.iban || '',
+                bank: agencyData.bank || '',
+                payment_frequency: agencyData.payment_frequency || '',
+                vat_num: agencyData.vat_num || '',
+                fiscal_code: agencyData.fiscal_code || '',
+                contact: agencyData.contact || '',
+                event_rate: agencyData.event_rate || '',
+                main_idioma: agencyData.main_idioma || '',
+                created_by: agencyData.created_by || '',
+                manager: agencyData.manager || '',
             });
         } catch (error) {
             console.error('Error fetching agency:', error.response ? error.response.data : error.message);
@@ -436,10 +459,10 @@ function modifyAgency() {
     };
 
     // Send POST request to create the agency
-    const createAgency = async () => {
+    const updateAgency = async () => {
         try {
-            const response = await axios.post(
-                'https://sincroteam-0592ac56319d.herokuapp.com/api/npo_agency/',
+            const response = await axios.put(
+                `${API}/api/get_agencies/${id}/`,
                 agencyData,
                 {
                     headers: {
@@ -450,7 +473,7 @@ function modifyAgency() {
             );
             console.log('Agency created:', response.data);
             navigate('/agencies')
-            alert('Agency Created Sucessfully')
+            alert('Agency Updated Sucessfully')
         } catch (error) {
             console.error('Error posting agency data:', error.response ? error.response.data : error.message);
         }
@@ -458,7 +481,7 @@ function modifyAgency() {
 
     // Handle form submit
     const handleSubmit = () => {
-        createAgency();
+        updateAgency();
     };
 
     // Map members to options for the user dropdown
@@ -467,35 +490,30 @@ function modifyAgency() {
         value: member.user_id, // Use user_id as the value
     }));
 
-
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     return (
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
-                <h1 className="text-2xl mt-10 font-bold">Agency Details</h1>
-                <h4 className="mt-2">* Fields are mandatory</h4>
+                <h1 className="text-2xl mt-10 font-bold">Update Agency</h1>
 
                 <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
                         <InputField
-                            label="Company Name *"
+                            label="Company Name"
                             placeholder="Enter company name"
                             name="company_name"
                             value={agencyData.company_name}
                             onChange={handleChange}
+                            disabled
                         />
-                        <DropdownSelect
-                            label="Select NPO/Agency *"
-                            options={[
-                                { label: 'Agency', value: 'agency' },
-                                { label: 'NPO', value: 'npo' },
-                            ]}
-                            value={agencyData.company_type}
-                            // onChange={handleAgencyTypeChange}
+                        <InputField
+                            label="Selected NPO/Agency"
+                            placeholder="Enter company name"
                             name="company_type"
+                            value={agencyData.company_type}
+                            onChange={handleChange}
+                            disabled
                         />
                         <InputField label="Email" placeholder="Enter email" type="email" name="email" value={agencyData.email} onChange={(e) => handleChange(e, 'email')} />
                         <InputField label="Contact Number" placeholder="Enter contact number" type="tel" name="phone" value={agencyData.phone} onChange={(e) => handleChange(e, 'phone')} />
@@ -505,7 +523,7 @@ function modifyAgency() {
                         <DropdownSelect
                             label="Select Country"        // Label for the dropdown
                             options={countryOptions}       // The country options passed to the dropdown
-                            value={selectedCountry}        // The selected country value from state
+                            value={selectedCountry || agencyData.country}        // The selected country value from state
                             onChange={handleCountrySelect} // Handler to update state on country change
                             name="country"                 // Name of the field for form submission
                         />
@@ -522,27 +540,27 @@ function modifyAgency() {
                         <InputField label="Fiscal Code" placeholder="Enter fiscal code" name="fiscal_code" value={agencyData.fiscal_code} onChange={(e) => handleChange(e, 'fiscal_code')} />
                         <InputField label="Payment Frequency" placeholder="Enter payment frequency" name="payment_frequency" value={agencyData.payment_frequency} onChange={(e) => handleChange(e, 'payment_frequency')} />
                         {/* <DropdownSelect label="Date Begin" options={['Option 1', 'Option 2']} value={agencyData.date_begin} onChange={handleChange} name="date_begin" /> */}
-                        <InputField
+                        {/* <InputField
                             label="Date Begin"
                             placeholder="Select date"
                             name="date_begin"
                             value={agencyData.date_begin}
                             onChange={(e) => handleChange(e, 'date_begin')}
                             type="date" // Setting the type as 'date' to show a date picker
-                        />
+                        /> */}
                         {/* <DropdownSelect label="Date Ending" options={['Option 1', 'Option 2']} value={agencyData.date_end} onChange={handleChange} name="date_end" /> */}
                         {/* <DropdownSelect label="Select Main Idioma" options={['Language 1', 'Language 2']} value={agencyData.main_idioma} onChange={handleChange} name="idioma" />
                */}
                         <DropdownSelect
                             label="Select Idioma"        // Label for the dropdown
                             options={languageOptions}       // The country options passed to the dropdown
-                            value={selectedLanguage}        // The selected country value from state
+                            value={selectedLanguage || agencyData.main_idioma}        // The selected country value from state
                             onChange={handleLanguageSelect} // Handler to update state on country change
                             name="idioma"                 // Name of the field for form submission
                         />
                         <div className="flex justify-center gap-4 pb-4">
                             <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">
-                                Create Details
+                                Update
                             </button>
                         </div>
                     </div>
@@ -568,4 +586,4 @@ function modifyAgency() {
     )
 }
 
-export default modifyAgency
+export default ModifyAgency
