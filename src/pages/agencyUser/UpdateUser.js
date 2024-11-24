@@ -39,7 +39,11 @@ function UpdateUser() {
             });
             setUserData(response.data);  // Update userData with fetched data
         } catch (error) {
-            console.error('Error fetching user data:', error.response ? error.response.data : error.message);
+            console.error('Error updating profile:', error);
+    
+            // Extract and show error message from the response
+            const errorMessage = error.response?.data?.detail || 'Failed to update profile.';
+            alert(errorMessage);
         }
     };
 
@@ -55,11 +59,14 @@ function UpdateUser() {
             last_name: userData.last_name,
             contact: userData.contact,
             address: userData.address,
+            language_s: userData.language_s,
+            language_w: userData.language_w,
+            transportation_mode: userData.transportation_mode
         };
 
         try {
-            const response = await axios.post(
-                `${API}/api/generate_user/`,
+            const response = await axios.put(
+                `${API}/api/update_profile/`,
                 payload,
                 {
                     headers: {
@@ -92,7 +99,7 @@ function UpdateUser() {
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
-                <h1 className="text-2xl mt-10 font-bold mb-2">Update User</h1>
+                <h1 className="text-2xl mt-10 font-bold mb-2">Update Profile</h1>
                 <div className="grid mt-2 w-full lg:grid-cols-12 gap-x-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
                         {/* Input fields for user data */}
@@ -122,6 +129,28 @@ function UpdateUser() {
                             placeholder="Enter address"
                             name="address"
                             value={userData.address}
+                            onChange={handleChange} // Handle input change
+                        />
+                        <InputField
+                            label="Language Speak"
+                            placeholder="Enter Language"
+                            name="language_s"
+                            value={userData.language_s}
+                            onChange={handleChange} // Handle input change
+                        />
+                        <InputField
+                            label="Language Write"
+                            placeholder="Enter Language"
+                            name="language_w"
+                            value={userData.language_w}
+                            onChange={handleChange} // Handle input change
+                        />
+
+                        <InputField
+                            label="Transportation Mode"
+                            placeholder="Enter Transportation Mode"
+                            name="transportation_mode"
+                            value={userData.transportation_mode}
                             onChange={handleChange} // Handle input change
                         />
                         {/* Submit button */}

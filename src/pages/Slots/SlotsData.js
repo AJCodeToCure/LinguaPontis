@@ -9,7 +9,7 @@ import axios from 'axios';
 import { API_Base } from '../../components/api/config';
 import { useParams } from 'react-router-dom';
 
-function AgencyNpos() {
+function SlotsData() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5); // Display 5 items per page
@@ -17,6 +17,7 @@ function AgencyNpos() {
     const [selectAll, setSelectAll] = useState(false);
     const [agenciesData, setAgenciesData] = useState([]); // State to store agencies data
     const { id } = useParams();
+    const [slotsData, setSlotsData] = useState(null);
 
 
     const [npos, setNpos] = useState([]);
@@ -25,49 +26,49 @@ function AgencyNpos() {
     const API = API_Base;
 
     useEffect(() => {
-        const fetchNpos = async () => {
+        const fetchSlots = async () => {
             try {
-                const response = await axios.get(`${API}/api/get_agencies/?agency_id=${id}`, {
+                const response = await axios.get(
+                    `${API}/api/mediator_slot/`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
                     },
-                });
-                setNpos(response.data);
+                }
+                );
+                // Assuming the response contains available slots
+                setSlotsData(response.data); // Store the slots in state (or handle as needed)
+                console.log('Slots Data:', response.data); // Check what data is returned
             } catch (error) {
-                console.error('Error getting team:', error);
-
-                // Extract and show error message from the response
-                const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
-                alert(errorMessage);
+                console.error('Error fetching slots:', error);
             }
         };
 
-        fetchNpos();
+        fetchSlots();
     }, [token]); // Only run once on mount
 
     const handleModify = (id) => {
-        navigate(`/modify-npo/${id}`); // Navigate to /modify-agency with the agency's ID
+        navigate(`/modify-slot/${id}`); // Navigate to /modify-agency with the agency's ID
     };
 
     // Handle delete action
-    const handleDelete = async (agencyId) => {
+    const handleDelete = async (slotId) => {
         try {
             // Perform the DELETE request
-            await axios.delete(`${API}/api/get_npos/${agencyId}/`, {
+            await axios.delete(`${API}/api/mediator_slot/${slotId}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
             // On success, remove the deleted agency from the state
-            setNpos((prev) => prev.filter((agency) => agency.id !== agencyId));
-            console.log(`Agency with ID ${agencyId} has been deleted.`);
-            alert('Agency Deleted Sucessfully')
+            setSlotsData((prev) => prev.filter((slot) => slot.id !== slotId));
+            alert('Slot Deleted Sucessfully')
         } catch (error) {
             console.error('Error getting team:', error);
 
             // Extract and show error message from the response
-            const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
+            const errorMessage = error.response?.data?.detail || 'Failed to getting the slot.';
             alert(errorMessage);
         }
     };
@@ -121,13 +122,13 @@ function AgencyNpos() {
                 <main className="flex-1 overflow-x-hidden overflow-y-auto bg-white p-6">
                     <div className="container mt-20 max-sm:w-full w-10/12 mx-auto">
                         <div className="flex justify-between items-center mb-6 max-sm:flex-col">
-                            <h1 className="text-2xl font-semibold font-[Poppins]">All Npos Data</h1>
+                            <h1 className="text-2xl font-semibold font-[Poppins]">Slots Data</h1>
                             <div className="flex items-center max-sm:flex-col">
                                 <button
                                     className="px-4 mr-2 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
-                                    onClick={() => navigate(`/create-npo/${id}`)}
+                                    onClick={() => navigate(`/create-slots/`)}
                                 >
-                                    Create Npo
+                                    Create Slot
                                 </button>
                                 <div className="relative mr-4 max-sm:mt-5 max-sm:mb-5">
                                     <input
@@ -148,74 +149,46 @@ function AgencyNpos() {
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-lg shadow overflow-x-auto">
-                            <table className="min-w-full">
-                                <thead>
-                                    <tr className="bg-gray-50 text-left text-xs font-light text-[var(--lightTextGray)] font-[Poppins] uppercase tracking-wider">
-                                        <th className="p-3">
-                                            <input
-                                                type="checkbox"
-                                                className="form-checkbox h-4 w-4 text-orange-600"
-                                                checked={selectAll}
-                                                onChange={handleSelectAll}
-                                            />
-                                        </th>
-                                        <th className="p-3">NPO/Agency</th>
-                                        <th className="p-3">Company Name</th>
-                                        <th className="p-3">Phone Number</th>
-                                        <th className="p-3">Email</th>
-                                        <th className="p-3">Country</th>
-                                        <th className="p-3">Status</th>
-                                        <th className="p-3"></th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {npos.map((agency) => (
-                                        agency.npo.map((npo) => (  // Loop over each NPO in the agency's npo array
-                                            <tr key={npo.id} className="hover:bg-gray-50 font-[Poppins] font-medium">
-                                                <td className="p-3">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="form-checkbox h-4 w-4 text-orange-600"
-                                                        checked={selectedAgencies.includes(npo.id)}
-                                                        onChange={() => toggleAgencySelection(npo.id)}  // Toggle selection for the NPO
-                                                    />
-                                                </td>
-                                                <td className="p-3">{npo.company_type}</td> {/* NPO Type */}
-                                                <td onClick={() => navigate(`/team-details/${npo.id}`)} className="p-3 cursor-pointer">{npo.company_name}</td> {/* NPO Name */}
-                                                <td className="p-3">{npo.phone || 'N/A'}</td> {/* Phone, if not available show 'N/A' */}
-                                                <td className="p-3">{npo.email || 'N/A'}</td> {/* Email, if not available show 'N/A' */}
-                                                <td className="p-3">{npo.country || 'N/A'}</td> {/* Country, if not available show 'N/A' */}
-                                                <td className="p-3">
-                                                    <span
-                                                        className={`px-4 py-1 rounded-[8px] text-xs ${getStatus(npo) === 'Online'
-                                                            ? 'bg-green-200 text-green-800 border border-green-800'
-                                                            : 'bg-red-200 text-red-800 border border-red-900'
-                                                            }`}
+                        <div >
+                            <div className="overflow-x-auto py-10">
+                                {slotsData && (
+                                    <div className="bg-[var(--cardTeamBg)] shadow-lg rounded-lg p-6">
+                                        <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Available Time Slots</h3>
+                                        <table className="min-w-full bg-white table-auto">
+                                            <thead>
+                                                <tr className="border-b">
+                                                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Date</th>
+                                                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Slot</th>
+                                                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {slotsData.map((slot) => (
+                                                    <tr
+                                                        key={slot.id}
+                                                        className="hover:bg-gray-50 border-b transition duration-300 ease-in-out"
                                                     >
-                                                        {getStatus(npo)} {/* Display the NPO status */}
-                                                    </span>
-                                                </td>
-                                                <td className="p-3">
-                                                    <button
-                                                        onClick={() => handleDelete(npo.id)}  // Trigger delete for NPO
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                        </svg>
-                                                    </button>
-                                                    <button className='ml-2' onClick={() => handleModify(npo.id)}>  {/* Pass npo.id to handleModify */}
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                                        </svg>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ))}
-
-                                </tbody>
-                            </table>
+                                                        <td className="px-4 py-3 text-sm text-gray-600">{slot.formatted_date}</td>
+                                                        <td className="px-4 py-3 text-sm text-gray-600">{slot.time_range}</td>
+                                                        <td className="px-2 py-3 flex gap-2 text-sm text-gray-600">
+                                                            <button onClick={() => handleDelete(slot.id)}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                                </svg>
+                                                            </button>
+                                                            <button onClick={() => handleModify(slot.id)} className=''>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                                </svg>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Pagination Section
@@ -255,4 +228,4 @@ function AgencyNpos() {
     )
 }
 
-export default AgencyNpos
+export default SlotsData

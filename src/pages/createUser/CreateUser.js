@@ -35,7 +35,11 @@ function CreateUser() {
             console.log(response.data);  // Log the data received from the API
             setPermissionGroups(response.data); // Set permission groups in the state
         } catch (error) {
-            console.error('Error fetching permission groups:', error.response ? error.response.data : error.message);
+            console.error('Error getting team:', error);
+    
+            // Extract and show error message from the response
+            const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
+            alert(errorMessage);
         }
     };
 

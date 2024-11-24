@@ -345,7 +345,7 @@ const languageOptions = countries.map(language => ({
     label: language,  // Label is also the country name
 }));
 
-function ModifyNpo() {
+function ModifyEvent() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const token = sessionStorage.getItem('access_token');
@@ -357,69 +357,53 @@ function ModifyNpo() {
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("");
     const [agencyData, setAgencyData] = useState({
-        company_name: '',
-        company_type: 'agency',
-        manager: selectedUserId,
-        agency: 6,
-        email: '',
+        name: '',
+        surname: '',
         address: '',
         country: '',
-        date_begin: '',
         city: '',
         postal_code: '',
-        date_ending: '',
+        email: '',
         phone: '',
-        iban: '',
-        bank: '',
-        payment_frequency: '',
-        vat_num: '',
-        fiscal_code: '',
-        contact: '',
-        event_rate: '',
-        main_idioma: '',
+        task: '',
+        created_by: '',
+        manager: '',
+        npo: '',
+        event_manager: '',
+        date_begin: '',
+        date_ending: '',
+        mediators: [],
     });
     const [members, setMembers] = useState([]);
 
-    const fetchNpo = async () => {
+    const fetchTeam = async () => {
         try {
-            const response = await axios.get(`${API}/api/get_npos/?npo_id=${id}`, {
+            const response = await axios.get(`${API}/api/event_specific/?event_id=${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            const agencyData = response.data.find((agency) => Number(agency.id) === Number(id));
-
-            // console.log('All Data', JSON.stringify(response.data, null, 2));
-            console.log('Data' + agencyData);
-
-
-
-            // console.log('Company Name' + agencyData.company_name);
+            // const agencyData = response.data.find((agency) => Number(agency.id) === Number(id));
+            // console.log('Data' + agencyData);
+            const teamData = response.data[0];
 
             setAgencyData({
-                company_name: agencyData.company_name || '',
-                company_type: agencyData.company_type || '',
-                created_at: agencyData.created_at || '',
-                updated_at: agencyData.updated_at || '',
-                created_by_group: agencyData.created_by_group || '',
-                address: agencyData.address || '',
-                country: agencyData.country || '',
-                city: agencyData.city || '',
-                postal_code: agencyData.postal_code || '',
-                date_begin: agencyData.date_begin || '',
-                date_ending: agencyData.date_ending || '',
-                email: agencyData.email || '',
-                phone: agencyData.phone || '',
-                iban: agencyData.iban || '',
-                bank: agencyData.bank || '',
-                payment_frequency: agencyData.payment_frequency || '',
-                vat_num: agencyData.vat_num || '',
-                fiscal_code: agencyData.fiscal_code || '',
-                contact: agencyData.contact || '',
-                event_rate: agencyData.event_rate || '',
-                main_idioma: agencyData.main_idioma || '',
-                created_by: agencyData.created_by || '',
-                manager: agencyData.manager || '',
+                name: teamData.name || '',
+                surname: teamData.surname || '',
+                address: teamData.address || '',
+                country: teamData.country || '',
+                city: teamData.city || '',
+                postal_code: teamData.postal_code || '',
+                email: teamData.email || '',
+                phone: teamData.phone || '',
+                task: teamData.task || '',
+                created_by: teamData.created_by || '',
+                manager: teamData.manager || '',
+                npo: teamData.npo || '',
+                event_manager: teamData.event_manager || '',
+                date_begin: teamData.date_begin || '',
+                date_ending: teamData.date_ending || '',
+                mediators: teamData.mediators || [] // Ensure mediators are set as an array
             });
         } catch (error) {
             console.error('Error getting team:', error);
@@ -432,7 +416,7 @@ function ModifyNpo() {
 
     // Call the fetchAgency function when the component mounts or when the `id` changes
     useEffect(() => {
-        fetchNpo();
+        fetchTeam();
     }, [id]);
 
     const handleCountrySelect = (e) => {
@@ -463,10 +447,10 @@ function ModifyNpo() {
     };
 
     // Send POST request to create the agency
-    const updateNpo = async () => {
+    const updateTeam = async () => {
         try {
             const response = await axios.put(
-                `${API}/api/get_npos/${id}/`,
+                `${API}/api/event/${id}/`,
                 agencyData,
                 {
                     headers: {
@@ -476,8 +460,8 @@ function ModifyNpo() {
                 }
             );
             console.log('Agency created:', response.data);
-            navigate('/npos')
-            alert('Npo Updated Sucessfully')
+            navigate('/agencies')
+            alert('Event Updated Sucessfully')
         } catch (error) {
             console.error('Error posting agency data:', error.response ? error.response.data : error.message);
         }
@@ -485,99 +469,81 @@ function ModifyNpo() {
 
     // Handle form submit
     const handleSubmit = () => {
-        updateNpo();
+        updateTeam();
     };
 
     // Map members to options for the user dropdown
     const userOptions = members.map((member) => ({
-        label: member.username, // Display the username
-        value: member.user_id, // Use user_id as the value
+        label: member.username,
+        value: member.user_id,
     }));
 
     return (
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
-                <h1 className="text-2xl mt-10 font-bold">Update Npo</h1>
+                <h1 className="text-2xl mt-10 font-bold">Update Event</h1>
 
                 <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
                         <InputField
-                            label="Company Name"
-                            placeholder="Enter company name"
-                            name="company_name"
-                            value={agencyData.company_name}
+                            label="Team Name *"
+                            placeholder="Enter team name"
+                            name="name"
+                            value={agencyData.name}
                             onChange={handleChange}
-                            disabled
                         />
-                        <InputField
-                            label="Selected NPO/Agency"
-                            placeholder="Enter company name"
-                            name="company_type"
-                            value={agencyData.company_type}
-                            onChange={handleChange}
-                            disabled
+                        {/* <DropdownSelect
+                            label="Select Team Manager *"
+                            options={teamOptions}
+                            value={selectedTeamId}
+                            onChange={handleTeamSelect}
+                            name="team"
                         />
+                        <DropdownSelect
+                            label="Select Event Manager *"
+                            options={eventOptions}
+                            value={selectedEventId}
+                            onChange={handleEventSelect}
+                            name="event"
+                        />
+                        <DropdownSelect
+                            label="Select Mediator Manager *"
+                            options={mediatorOptions}
+                            value={selectedMediatorId}
+                            onChange={handleMediatorSelect}
+                            name="mediator"
+                        /> */}
+                        <InputField label="surname" placeholder="Enter surname" type="surname" name="surname" value={agencyData.surname} onChange={(e) => handleChange(e, 'surname')} />
                         <InputField label="Email" placeholder="Enter email" type="email" name="email" value={agencyData.email} onChange={(e) => handleChange(e, 'email')} />
                         <InputField label="Contact Number" placeholder="Enter contact number" type="tel" name="phone" value={agencyData.phone} onChange={(e) => handleChange(e, 'phone')} />
                         <InputField label="Postal Code" placeholder="Enter postal code" name="postal_code" value={agencyData.postal_code} onChange={(e) => handleChange(e, 'postal_code')} />
                         <InputField label="Address" placeholder="Enter address" name="address" value={agencyData.address} onChange={(e) => handleChange(e, 'address')} />
                         <InputField label="City" placeholder="Enter city" name="city" value={agencyData.city} onChange={(e) => handleChange(e, 'city')} />
+                        <InputField label="task" placeholder="Enter task" name="task" value={agencyData.task} onChange={(e) => handleChange(e, 'task')} />
                         <DropdownSelect
-                            label="Select Country"        // Label for the dropdown
-                            options={countryOptions}       // The country options passed to the dropdown
-                            value={selectedCountry || agencyData.country}        // The selected country value from state
-                            onChange={handleCountrySelect} // Handler to update state on country change
-                            name="country"                 // Name of the field for form submission
+                            label="Select Country"
+                            options={countryOptions}
+                            value={selectedCountry}
+                            onChange={handleCountrySelect}
+                            name="country"
                         />
-                        <InputField label="IBAN" placeholder="Enter IBAN" name="iban" value={agencyData.iban} onChange={(e) => handleChange(e, 'iban')} />
-                        <InputField label="VAT Number" placeholder="Enter VAT number" name="vat_num" value={agencyData.vat_num} onChange={(e) => handleChange(e, 'vat_num')} />
-                        <InputField
-                            label="BANK NAME"
-                            placeholder="Enter Bank Name"
-                            name="bank"  // The name of the field
-                            value={agencyData.bank}  // Bind value to agencyData.bank
-                            onChange={(e) => handleChange(e, 'bank')}  // Update state when the value changes
-                        />
-                        {/* <DropdownSelect label="Select Bank Name" options={['Bank 1', 'Bank 2']} value={agencyData.bank_name} onChange={handleChange} name="bank_name" /> */}
-                        <InputField label="Fiscal Code" placeholder="Enter fiscal code" name="fiscal_code" value={agencyData.fiscal_code} onChange={(e) => handleChange(e, 'fiscal_code')} />
-                        <InputField label="Payment Frequency" placeholder="Enter payment frequency" name="payment_frequency" value={agencyData.payment_frequency} onChange={(e) => handleChange(e, 'payment_frequency')} />
-                        {/* <DropdownSelect label="Date Begin" options={['Option 1', 'Option 2']} value={agencyData.date_begin} onChange={handleChange} name="date_begin" /> */}
-                        {/* <InputField
-                            label="Date Begin"
-                            placeholder="Select date"
-                            name="date_begin"
-                            value={agencyData.date_begin}
-                            onChange={(e) => handleChange(e, 'date_begin')}
-                            type="date" // Setting the type as 'date' to show a date picker
-                        /> */}
-                        {/* <DropdownSelect label="Date Ending" options={['Option 1', 'Option 2']} value={agencyData.date_end} onChange={handleChange} name="date_end" /> */}
-                        {/* <DropdownSelect label="Select Main Idioma" options={['Language 1', 'Language 2']} value={agencyData.main_idioma} onChange={handleChange} name="idioma" />
-               */}
-                        <DropdownSelect
-                            label="Select Idioma"        // Label for the dropdown
-                            options={languageOptions}       // The country options passed to the dropdown
-                            value={selectedLanguage || agencyData.main_idioma}        // The selected country value from state
-                            onChange={handleLanguageSelect} // Handler to update state on country change
-                            name="idioma"                 // Name of the field for form submission
-                        />
-
                         <InputField
                             label="Date Begin"
                             placeholder="Select date"
                             name="date_begin"
                             value={agencyData.date_begin}
                             onChange={(e) => handleChange(e, 'date_begin')}
-                            type="date" // Setting the type as 'date' to show a date picker
+                            type="datetime-local"
                         />
                         <InputField
-                            label="Date Ending"
+                            label="Date End"
                             placeholder="Select date"
                             name="date_ending"
                             value={agencyData.date_ending}
                             onChange={(e) => handleChange(e, 'date_ending')}
-                            type="date" // Setting the type as 'date' to show a date picker
+                            type="datetime-local"
                         />
                         <div className="flex justify-center gap-4 pb-4">
                             <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">
@@ -607,4 +573,4 @@ function ModifyNpo() {
     )
 }
 
-export default ModifyNpo
+export default ModifyEvent

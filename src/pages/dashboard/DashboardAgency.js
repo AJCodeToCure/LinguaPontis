@@ -17,7 +17,7 @@ import { VisitorIcon } from '../../assets/VisitorIcon';
 const StatCard = ({ icon, label, value, change, changeType }) => {
   return (
     <div className="flex font-[Poppins] items-center  rounded-lg p-6">
-      <div style={{background:"linear-gradient(180.26deg, #03045E 16.54%, #EFFFF6 131.95%)"}} className="flex items-center justify-center w-16 h-16  text-white rounded-full">
+      <div style={{ background: "linear-gradient(180.26deg, #03045E 16.54%, #EFFFF6 131.95%)" }} className="flex items-center justify-center w-16 h-16  text-white rounded-full">
         {icon}
       </div>
       <div className="ml-4">
@@ -162,23 +162,24 @@ const DashboardAgency = () => {
         <Navbar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
           <div className='justify-center'>
-          <StatsRow />
+            <StatsRow />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {npoCards.map((npo, index) => (
-              <Link to="/task-details" key={index}>
-              <MainNPOcard
-                date={npo.date}
-                npoNumber={npo.npoNumber}
-                totalTasks={npo.totalTasks}
-                lastUpdated={npo.lastUpdated}
-                hoursConsumed={npo.hoursConsumed}
-                totalHours={npo.totalHours}
-                teamMembers={npo.teamMembers}
-                priority={npo.priority}
-                pendingEvents={npo.pendingEvents}
+              // <Link to="/task-details" key={index}>
+              <Link>
+                <MainNPOcard
+                  date={npo.date}
+                  npoNumber={npo.npoNumber}
+                  totalTasks={npo.totalTasks}
+                  lastUpdated={npo.lastUpdated}
+                  hoursConsumed={npo.hoursConsumed}
+                  totalHours={npo.totalHours}
+                  teamMembers={npo.teamMembers}
+                  priority={npo.priority}
+                  pendingEvents={npo.pendingEvents}
                 />
-                </Link> 
+              </Link>
             ))}
           </div>
         </main>

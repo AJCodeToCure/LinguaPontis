@@ -44,8 +44,11 @@ function UserManagement() {
             setAgenciesData(response.data);
             console.log(response.data)
         } catch (error) {
-            // Handle any errors
-            console.error(error.response ? error.response.data : error.message);
+            console.error('Error getting team:', error);
+
+            // Extract and show error message from the response
+            const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
+            alert(errorMessage);
         } finally {
 
         }
@@ -70,7 +73,11 @@ function UserManagement() {
             // Optionally log the agency ID to verify the deactivation
             console.log(`Agency with ID ${agencyId} has been deactivated.`);
         } catch (error) {
-            console.error('Error deactivating agency:', error.response ? error.response.data : error.message);
+            console.error('Error getting team:', error);
+
+            // Extract and show error message from the response
+            const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
+            alert(errorMessage);
         }
     };
 
@@ -130,6 +137,7 @@ function UserManagement() {
                         <div className="flex justify-between items-center mb-6 max-sm:flex-col">
                             <h1 className="text-2xl font-semibold font-[Poppins]">All Users Data</h1>
                             <div className="flex items-center max-sm:flex-col">
+                                <button onClick={handleCreateUser} className="px-4 mr-2 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create User</button>
                                 <div className="relative mr-4 max-sm:mt-5 max-sm:mb-5">
                                     <input
                                         type="text"
@@ -247,7 +255,7 @@ function UserManagement() {
                         </div>
 
                         {/* Pagination Section */}
-                        <div className="mt-4 flex justify-between items-center">
+                        {/* <div className="mt-4 flex justify-between items-center">
                             <p className="text-sm font-[Poppins] text-gray-600">
                                 Showing {indexOfFirstAgency + 1} to {Math.min(indexOfLastAgency, agenciesData.length)} of {agenciesData.length} entries
                             </p>
@@ -275,16 +283,16 @@ function UserManagement() {
                                     <ChevronRight size={20} />
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
-                    <div className="mt-10">
+                    {/* <div className="mt-10">
                         <div className="flex justify-center gap-4 pb-4 max-sm:flex-col">
                             <button onClick={handleCreateUser} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create User</button>
                             <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Modify Details</button>
                             <button className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">View Details</button>
                             <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-800">Delete</button>
                         </div>
-                    </div>
+                    </div> */}
                 </main>
             </div>
         </div>

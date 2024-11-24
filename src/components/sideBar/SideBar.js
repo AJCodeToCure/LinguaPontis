@@ -65,6 +65,7 @@ import Logo from '../../assets/Logo';
 import DashboardIcon from '../../assets/DashboardIcon';
 import EventManagementIcons from '../../assets/EventManagementIcons';
 import { AgenciesManagementIcon } from '../../assets/TeamManagementIcon';
+import { TeamManagementIcon } from '../../assets/TeamManagementIcon';
 import { CreatAgencyIcons } from '../../assets/MediatorAvailablitiyIcons';
 import TaskManagementIcon from '../../assets/TaskManagementIcon';
 import { NotificationIcon } from '../../assets/NotificationIcon';
@@ -99,12 +100,12 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
       link: '/user-management', // The link for User Management page
       action: () => navigate('/users-management')  // Navigate directly to User Management page
     },
-    {
-      icon: <EventManagementIcons className="w-6 h-6" />,
-      label: 'Event Management',
-      link: '/event-management',
-      action: () => navigate('/event-management')  // Navigate directly to Event Management
-    },
+    // {
+    //   icon: <EventManagementIcons className="w-6 h-6" />,
+    //   label: 'Event Management',
+    //   link: '/event-management',
+    //   action: () => navigate('/event-management')  // Navigate directly to Event Management
+    // },
     {
       icon: <AgenciesManagementIcon className="w-6 h-6" />,
       label: 'Agencies',
@@ -117,30 +118,43 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
       link: '/npo',
       action: () => navigate('/npos')  // Navigate directly to Agencies
     },
+
+    {
+      icon: <TeamManagementIcon className="w-6 h-6" />,
+      label: 'Teams',
+      link: '/team',
+      action: () => navigate('/team-details')  // Navigate directly to Agencies
+    },
+    {
+      icon: <EventManagementIcons className="w-6 h-6" />,
+      label: 'Slots',
+      link: '/create-slots',
+      action: () => navigate('/slots-data')  // Navigate directly to Event Management
+    },
     // {
     //   icon: <CreatAgencyIcons className="w-6 h-6" />,
     //   label: 'Create Agency',
     //   link: '/create-agency',
     //   action: () => navigate('/create-agency')  // Navigate directly to Create Agency
     // },
-    {
-      icon: <TaskManagementIcon className="w-6 h-6" />,
-      label: 'Task Management',
-      link: '/task-management',
-      action: () => navigate('/task-management')  // Navigate directly to Task Management
-    },
-    {
-      icon: <NotificationIcon className="w-6 h-6" />,
-      label: 'Notifications',
-      link: '/notifications', // Example link for Notifications
-      action: () => navigate('/notifications')  // Navigate directly to Notifications
-    },
-    {
-      icon: <SettingsIcon className="w-6 h-6" />,
-      label: 'Settings',
-      link: '/settings', // Example link for Settings
-      action: () => navigate('/settings')  // Navigate directly to Settings
-    },
+    // {
+    //   icon: <TaskManagementIcon className="w-6 h-6" />,
+    //   label: 'Task Management',
+    //   link: '/task-management',
+    //   action: () => navigate('/task-management')  // Navigate directly to Task Management
+    // },
+    // {
+    //   icon: <NotificationIcon className="w-6 h-6" />,
+    //   label: 'Notifications',
+    //   link: '/notifications', // Example link for Notifications
+    //   action: () => navigate('/notifications')  // Navigate directly to Notifications
+    // },
+    // {
+    //   icon: <SettingsIcon className="w-6 h-6" />,
+    //   label: 'Settings',
+    //   link: '/settings', // Example link for Settings
+    //   action: () => navigate('/settings')  // Navigate directly to Settings
+    // },
     {
       icon: <ExitToAppIcon className="w-6 h-6" />,
       label: 'Logout',

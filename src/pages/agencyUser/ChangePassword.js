@@ -46,9 +46,11 @@ function ChangePassword() {
             navigate('/update-user')
 
         } catch (error) {
-            console.error('Error updating profile:', error.response ? error.response.data : error.message);
-            alert('Error updating profile:')
-            // Handle the error (e.g., show an error message)
+            console.error('Error updating profile:', error);
+    
+            // Extract and show error message from the response
+            const errorMessage = error.response?.data?.detail || 'Failed to updating profile.';
+            alert(errorMessage);
         }
     };
 

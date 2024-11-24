@@ -31,8 +31,12 @@ const Agencies = () => {
         });
         setAgencies(response.data);  // Store the members in the state
       } catch (error) {
-        console.error('Error fetching members:', error.response ? error.response.data : error.message);
-      }
+        console.error('Error getting agencies:', error);
+
+        // Extract and show error message from the response
+        const errorMessage = error.response?.data?.detail || 'Failed to getting the agencies.';
+        alert(errorMessage);
+    }
     };
 
     fetchAgencies();
@@ -232,7 +236,7 @@ const Agencies = () => {
             </div>
 
             {/* Pagination Section */}
-            <div className="mt-4 flex justify-between items-center">
+            {/* <div className="mt-4 flex justify-between items-center">
               <p className="text-sm font-[Poppins] text-gray-600">
                 Showing {indexOfFirstAgency + 1} to {Math.min(indexOfLastAgency, agenciesData.length)} of {agenciesData.length} entries
               </p>
@@ -260,7 +264,7 @@ const Agencies = () => {
                   <ChevronRight size={20} />
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="mt-10">
             <div className="flex justify-center gap-4 pb-4 max-sm:flex-col">

@@ -345,7 +345,7 @@ const languageOptions = countries.map(language => ({
     label: language,  // Label is also the country name
 }));
 
-function ModifyNpo() {
+function CreateEvent() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const token = sessionStorage.getItem('access_token');
@@ -354,86 +354,51 @@ function ModifyNpo() {
     const API = API_Base;
 
     const [selectedUserId, setSelectedUserId] = useState('');
+    const [selectedMediatorId, setSelectedMediatorId] = useState("");
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("");
     const [agencyData, setAgencyData] = useState({
-        company_name: '',
-        company_type: 'agency',
-        manager: selectedUserId,
-        agency: 6,
-        email: '',
+        team: id,
+        mediator: '',
+        name: '',
+        surname: '',
         address: '',
         country: '',
-        date_begin: '',
         city: '',
         postal_code: '',
-        date_ending: '',
+        email: '',
         phone: '',
-        iban: '',
-        bank: '',
-        payment_frequency: '',
-        vat_num: '',
-        fiscal_code: '',
-        contact: '',
-        event_rate: '',
-        main_idioma: '',
+        task: '',
+        created_by: '',
+        manager: '',
+        npo: '',
+        event_manager: '',
+        date_begin: '',
+        date_ending: '',
     });
     const [members, setMembers] = useState([]);
+    const [slotsData, setSlotsData] = useState(null);
 
-    const fetchNpo = async () => {
-        try {
-            const response = await axios.get(`${API}/api/get_npos/?npo_id=${id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            const agencyData = response.data.find((agency) => Number(agency.id) === Number(id));
-
-            // console.log('All Data', JSON.stringify(response.data, null, 2));
-            console.log('Data' + agencyData);
-
-
-
-            // console.log('Company Name' + agencyData.company_name);
-
-            setAgencyData({
-                company_name: agencyData.company_name || '',
-                company_type: agencyData.company_type || '',
-                created_at: agencyData.created_at || '',
-                updated_at: agencyData.updated_at || '',
-                created_by_group: agencyData.created_by_group || '',
-                address: agencyData.address || '',
-                country: agencyData.country || '',
-                city: agencyData.city || '',
-                postal_code: agencyData.postal_code || '',
-                date_begin: agencyData.date_begin || '',
-                date_ending: agencyData.date_ending || '',
-                email: agencyData.email || '',
-                phone: agencyData.phone || '',
-                iban: agencyData.iban || '',
-                bank: agencyData.bank || '',
-                payment_frequency: agencyData.payment_frequency || '',
-                vat_num: agencyData.vat_num || '',
-                fiscal_code: agencyData.fiscal_code || '',
-                contact: agencyData.contact || '',
-                event_rate: agencyData.event_rate || '',
-                main_idioma: agencyData.main_idioma || '',
-                created_by: agencyData.created_by || '',
-                manager: agencyData.manager || '',
-            });
-        } catch (error) {
-            console.error('Error getting team:', error);
-    
-            // Extract and show error message from the response
-            const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
-            alert(errorMessage);
-        }
-    };
-
-    // Call the fetchAgency function when the component mounts or when the `id` changes
     useEffect(() => {
-        fetchNpo();
-    }, [id]);
+        const fetchMediators = async () => {
+            try {
+                const response = await axios.get(`${API}/api/team/?team_id=${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                setMembers(response.data);
+            } catch (error) {
+                console.error('Error getting team:', error);
+        
+                // Extract and show error message from the response
+                const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
+                alert(errorMessage);
+            }
+        };
+
+        fetchMediators();
+    }, [token]);
 
     const handleCountrySelect = (e) => {
         const { value } = e.target;  // Get the selected country's name from the event
@@ -463,10 +428,10 @@ function ModifyNpo() {
     };
 
     // Send POST request to create the agency
-    const updateNpo = async () => {
+    const createEvent = async () => {
         try {
-            const response = await axios.put(
-                `${API}/api/get_npos/${id}/`,
+            const response = await axios.post(
+                `${API}/api/event/`,
                 agencyData,
                 {
                     headers: {
@@ -475,9 +440,8 @@ function ModifyNpo() {
                     },
                 }
             );
-            console.log('Agency created:', response.data);
-            navigate('/npos')
-            alert('Npo Updated Sucessfully')
+            navigate('/agencies')
+            alert('Event created Sucessfully')
         } catch (error) {
             console.error('Error posting agency data:', error.response ? error.response.data : error.message);
         }
@@ -485,108 +449,109 @@ function ModifyNpo() {
 
     // Handle form submit
     const handleSubmit = () => {
-        updateNpo();
+        createEvent();
     };
 
     // Map members to options for the user dropdown
-    const userOptions = members.map((member) => ({
-        label: member.username, // Display the username
-        value: member.user_id, // Use user_id as the value
-    }));
+    const mediatorOptions = members.map((member) =>
+        member.mediators.map((mediator) => ({
+            label: mediator.mediator_username,  // Display the username
+            value: mediator.mediator_user_id   // Use the mediator's user_id as the value
+        }))
+    ).flat();
+
+    const handleMediatorSelect = async (e) => {
+        const selectedId = e.target.value;
+        setSelectedMediatorId(selectedId); // Update the selected mediator ID
+
+        // Update the team data with the selected mediator ID
+        setAgencyData((prevData) => ({
+            ...prevData,
+            mediators: [selectedId],
+        }));
+
+        // Now make the API call with the selected mediator ID
+        try {
+            const response = await axios.get(
+                `${API}/api/mediator_all_slot/?mediator_id=${selectedId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+            );
+            // Assuming the response contains available slots
+            setSlotsData(response.data); // Store the slots in state (or handle as needed)
+            console.log('Slots Data:', response.data); // Check what data is returned
+        } catch (error) {
+            console.error('Error fetching slots:', error);
+        }
+    };
+
+
+
 
     return (
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
-                <h1 className="text-2xl mt-10 font-bold">Update Npo</h1>
+                <h1 className="text-2xl mt-10 font-bold">Create Event</h1>
+                <div className='flex sm:flex-col md:flex-row lg:flex-row'>
+                    <div className="grid mt-16 w-full lg:grid-cols-10">
 
-                <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
-                        <InputField
-                            label="Company Name"
-                            placeholder="Enter company name"
-                            name="company_name"
-                            value={agencyData.company_name}
-                            onChange={handleChange}
-                            disabled
-                        />
-                        <InputField
-                            label="Selected NPO/Agency"
-                            placeholder="Enter company name"
-                            name="company_type"
-                            value={agencyData.company_type}
-                            onChange={handleChange}
-                            disabled
-                        />
-                        <InputField label="Email" placeholder="Enter email" type="email" name="email" value={agencyData.email} onChange={(e) => handleChange(e, 'email')} />
-                        <InputField label="Contact Number" placeholder="Enter contact number" type="tel" name="phone" value={agencyData.phone} onChange={(e) => handleChange(e, 'phone')} />
-                        <InputField label="Postal Code" placeholder="Enter postal code" name="postal_code" value={agencyData.postal_code} onChange={(e) => handleChange(e, 'postal_code')} />
-                        <InputField label="Address" placeholder="Enter address" name="address" value={agencyData.address} onChange={(e) => handleChange(e, 'address')} />
-                        <InputField label="City" placeholder="Enter city" name="city" value={agencyData.city} onChange={(e) => handleChange(e, 'city')} />
-                        <DropdownSelect
-                            label="Select Country"        // Label for the dropdown
-                            options={countryOptions}       // The country options passed to the dropdown
-                            value={selectedCountry || agencyData.country}        // The selected country value from state
-                            onChange={handleCountrySelect} // Handler to update state on country change
-                            name="country"                 // Name of the field for form submission
-                        />
-                        <InputField label="IBAN" placeholder="Enter IBAN" name="iban" value={agencyData.iban} onChange={(e) => handleChange(e, 'iban')} />
-                        <InputField label="VAT Number" placeholder="Enter VAT number" name="vat_num" value={agencyData.vat_num} onChange={(e) => handleChange(e, 'vat_num')} />
-                        <InputField
-                            label="BANK NAME"
-                            placeholder="Enter Bank Name"
-                            name="bank"  // The name of the field
-                            value={agencyData.bank}  // Bind value to agencyData.bank
-                            onChange={(e) => handleChange(e, 'bank')}  // Update state when the value changes
-                        />
-                        {/* <DropdownSelect label="Select Bank Name" options={['Bank 1', 'Bank 2']} value={agencyData.bank_name} onChange={handleChange} name="bank_name" /> */}
-                        <InputField label="Fiscal Code" placeholder="Enter fiscal code" name="fiscal_code" value={agencyData.fiscal_code} onChange={(e) => handleChange(e, 'fiscal_code')} />
-                        <InputField label="Payment Frequency" placeholder="Enter payment frequency" name="payment_frequency" value={agencyData.payment_frequency} onChange={(e) => handleChange(e, 'payment_frequency')} />
-                        {/* <DropdownSelect label="Date Begin" options={['Option 1', 'Option 2']} value={agencyData.date_begin} onChange={handleChange} name="date_begin" /> */}
-                        {/* <InputField
-                            label="Date Begin"
-                            placeholder="Select date"
-                            name="date_begin"
-                            value={agencyData.date_begin}
-                            onChange={(e) => handleChange(e, 'date_begin')}
-                            type="date" // Setting the type as 'date' to show a date picker
-                        /> */}
-                        {/* <DropdownSelect label="Date Ending" options={['Option 1', 'Option 2']} value={agencyData.date_end} onChange={handleChange} name="date_end" /> */}
-                        {/* <DropdownSelect label="Select Main Idioma" options={['Language 1', 'Language 2']} value={agencyData.main_idioma} onChange={handleChange} name="idioma" />
-               */}
-                        <DropdownSelect
-                            label="Select Idioma"        // Label for the dropdown
-                            options={languageOptions}       // The country options passed to the dropdown
-                            value={selectedLanguage || agencyData.main_idioma}        // The selected country value from state
-                            onChange={handleLanguageSelect} // Handler to update state on country change
-                            name="idioma"                 // Name of the field for form submission
-                        />
-
-                        <InputField
-                            label="Date Begin"
-                            placeholder="Select date"
-                            name="date_begin"
-                            value={agencyData.date_begin}
-                            onChange={(e) => handleChange(e, 'date_begin')}
-                            type="date" // Setting the type as 'date' to show a date picker
-                        />
-                        <InputField
-                            label="Date Ending"
-                            placeholder="Select date"
-                            name="date_ending"
-                            value={agencyData.date_ending}
-                            onChange={(e) => handleChange(e, 'date_ending')}
-                            type="date" // Setting the type as 'date' to show a date picker
-                        />
-                        <div className="flex justify-center gap-4 pb-4">
-                            <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">
-                                Update
-                            </button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
+                            <InputField
+                                label="Event Name *"
+                                placeholder="Enter event name"
+                                name="name"
+                                value={agencyData.name}
+                                onChange={handleChange}
+                            />
+                            <DropdownSelect
+                                label="Select Mediator *"
+                                options={mediatorOptions}
+                                value={selectedMediatorId}
+                                onChange={handleMediatorSelect}
+                                name="mediator"
+                            />
+                            <InputField label="surname" placeholder="Enter surname" type="surname" name="surname" value={agencyData.surname} onChange={(e) => handleChange(e, 'surname')} />
+                            <InputField label="Email" placeholder="Enter email" type="email" name="email" value={agencyData.email} onChange={(e) => handleChange(e, 'email')} />
+                            <InputField label="Contact Number" placeholder="Enter contact number" type="tel" name="phone" value={agencyData.phone} onChange={(e) => handleChange(e, 'phone')} />
+                            <InputField label="Postal Code" placeholder="Enter postal code" name="postal_code" value={agencyData.postal_code} onChange={(e) => handleChange(e, 'postal_code')} />
+                            <InputField label="Address" placeholder="Enter address" name="address" value={agencyData.address} onChange={(e) => handleChange(e, 'address')} />
+                            <InputField label="City" placeholder="Enter city" name="city" value={agencyData.city} onChange={(e) => handleChange(e, 'city')} />
+                            <InputField label="task" placeholder="Enter task" name="task" value={agencyData.task} onChange={(e) => handleChange(e, 'task')} />
+                            <DropdownSelect
+                                label="Select Country"
+                                options={countryOptions}
+                                value={selectedCountry}
+                                onChange={handleCountrySelect}
+                                name="country"
+                            />
+                            <InputField
+                                label="Date Begin"
+                                placeholder="Select date"
+                                name="date_begin"
+                                value={agencyData.date_begin}
+                                onChange={(e) => handleChange(e, 'date_begin')}
+                                type="datetime-local"
+                            />
+                            <InputField
+                                label="Date End"
+                                placeholder="Select date"
+                                name="date_ending"
+                                value={agencyData.date_ending}
+                                onChange={(e) => handleChange(e, 'date_ending')}
+                                type="datetime-local"
+                            />
+                            <div className="flex justify-center gap-4 pb-4">
+                                <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">
+                                    Create
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* <div className="lg:col-span-4 lg:flex-row justify-between items-start lg:items-center">
+                        {/* <div className="lg:col-span-4 lg:flex-row justify-between items-start lg:items-center">
               <DropdownSelect label="Event Rate" options={['Rate 1', 'Rate 2']} value={agencyData.event_rate} onChange={handleChange} name="event_rate" />
               <Calendar
                 selectedDate={selectedDate}
@@ -595,8 +560,36 @@ function ModifyNpo() {
                 setChosenDate={setChosenDate}
               />
             </div> */}
-                </div>
+                    </div>
+                    <div className="overflow-x-auto py-10">
+                        {slotsData && (
+                            <div className="bg-[var(--cardTeamBg)] shadow-lg rounded-lg p-6">
+                                <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Available Time Slots</h3>
+                                <table className="min-w-full bg-white table-auto">
+                                    <thead>
+                                        <tr className="border-b">
+                                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Date</th>
+                                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Slot</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {slotsData.map((slot) => (
+                                            <tr
+                                                key={slot.id}
+                                                className="hover:bg-gray-50 border-b transition duration-300 ease-in-out"
+                                            >
+                                                <td className="px-4 py-3 text-sm text-gray-600">{slot.formatted_date}</td>
+                                                <td className="px-4 py-3 text-sm text-gray-600">{slot.time_range}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
 
+
+                </div>
                 {/* <div className="mt-auto">
             <div className="flex justify-center gap-4 pb-4">
               <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Details</button>
@@ -607,4 +600,4 @@ function ModifyNpo() {
     )
 }
 
-export default ModifyNpo
+export default CreateEvent

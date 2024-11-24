@@ -10,6 +10,7 @@ import CreateAgency from '../pages/createAgency/createAgency';
 import TaskManagement from '../pages/taskManagement/TaskManagement';
 import TaskDetails from '../pages/taskDetails/TaskDetails';
 import TeamDetails from '../pages/teamDetails/TeamDetails';
+import TeamDetailslist from '../pages/teamDetails/TeamDetailsList';
 import TeamUserManagement from '../pages/teamUserManagement/TeamUserManagement';
 import AccountingManagement from '../pages/accountingManagement/AccountingManagement';
 import TaskManager from '../pages/taskManager/TaskManager';
@@ -23,6 +24,13 @@ import ModifyNpo from '../pages/createNpo/ModifyNps';
 import UpdateUser from '../pages/agencyUser/UpdateUser';
 import AgencyNpos from '../pages/npos/AgencyNpos';
 import ChangePassword from '../pages/agencyUser/ChangePassword';
+import CreateTeam from '../pages/createTeam/CreateTeam';
+import ModifyTeam from '../pages/teamDetails/ModifyTeam';
+import CreateEvent from '../pages/eventManagement/CreateEvent';
+import ModifyEvent from '../pages/eventManagement/ModifyEvent';
+import CreateSlots from '../pages/Slots/CreateSlots';
+import SlotsData from '../pages/Slots/SlotsData';
+import ModifySlot from '../pages/Slots/ModifySlot';
 
 const AppRoutes = () => {
   return (
@@ -37,19 +45,29 @@ const AppRoutes = () => {
         <Route path="/modify-agency/:id" element={<ModifyAgency />} />
         <Route path="/modify-npo/:id" element={<ModifyNpo />} />
         <Route path="/agency-npos/:id" element={<AgencyNpos />} />
+        <Route path="/create-team" element={<CreateTeam />} />
+        <Route path="/modify-team/:id" element={<ModifyTeam />} />
+        <Route path="/modify-event/:id" element={<ModifyEvent />} />
+        <Route path="/modify-slot/:id" element={<ModifySlot />} />
+
 
         <Route path="/agency-user" element={<AgencyUser />} />
+        <Route path="/slots-data" element={<SlotsData />} />
+        <Route path="/create-slots" element={<CreateSlots />} />
+        <Route path="/create-event/:id" element={<CreateEvent />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/update-user" element={<UpdateUser />} />
-        <Route path="/event-management" element={<EventManagementPage />} />
+        <Route path="/event-management/:id" element={<EventManagementPage />} />
         <Route path="/user-management" element={<agenciesManagement />} />
         <Route path="/beneficiary-management" element={<BeneficiaryManagement />} />
         <Route path="/create-agency" element={<CreateAgency />} />
         <Route path="/create-npo" element={<CreateNpo />} />
+        <Route path="/create-npo/:id" element={<CreateNpo />} />
         <Route path="/create-user" element={<CreateUser />} />
         <Route path="/task-management" element={<TaskManagement />} />
         <Route path="/task-details" element={<TaskDetails />} />
-        <Route path="/team-details" element={<TeamDetails />} />
+        <Route path="/team-details/:id" element={<TeamDetails />} />
+        <Route path="/team-details" element={<TeamDetailslist />} />
         <Route path="/team-user-management" element={<TeamUserManagement />} />
         <Route path="/accounting-management" element={<AccountingManagement />} />
         <Route path="/task-manager" element={<TaskManager />} />

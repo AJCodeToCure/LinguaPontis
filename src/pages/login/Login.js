@@ -42,10 +42,13 @@ const Login = () => {
       // Store the values in sessionStorage
       sessionStorage.setItem('user_group', user_group);
       sessionStorage.setItem('access_token', access);
-    } catch (err) {
-      // If login fails, handle the error
-      console.error('Error:', err.response ? err.response.data : err.message);
-    }
+    } catch (error) {
+      console.error('Error getting team:', error);
+
+      // Extract and show error message from the response
+      const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
+      alert(errorMessage);
+  }
   };
 
   // const handleSubmit = async (event) => {

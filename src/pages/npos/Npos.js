@@ -31,7 +31,11 @@ function Npos() {
                 });
                 setNpos(response.data); 
             } catch (error) {
-                console.error('Error fetching members:', error.response ? error.response.data : error.message);
+                console.error('Error getting team:', error);
+        
+                // Extract and show error message from the response
+                const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
+                alert(errorMessage);
             }
         };
 
@@ -57,7 +61,11 @@ function Npos() {
             console.log(`Agency with ID ${agencyId} has been deleted.`);
             alert('Agency Deleted Sucessfully')
         } catch (error) {
-            console.error('Error deleting agency:', error.response ? error.response.data : error.message);
+            console.error('Error getting team:', error);
+    
+            // Extract and show error message from the response
+            const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
+            alert(errorMessage);
         }
     };
 
@@ -170,7 +178,7 @@ function Npos() {
                                                 />
                                             </td>
                                             <td className="p-3">{agency.company_type}</td> {/* Agency Type */}
-                                            <td className="p-3">{agency.company_name}</td> {/* Agency Name */}
+                                            <td onClick={() => navigate(`/team-details/${agency.id}`)} className="p-3 cursor-pointer">{agency.company_name}</td> {/* Agency Name */}
                                             <td className="p-3">{agency.phone || 'N/A'}</td> {/* Assuming 'phone' exists or N/A */}
                                             <td className="p-3">{agency.email || 'N/A'}</td> {/* Assuming 'email' exists or N/A */}
                                             <td className="p-3">{agency.country || 'N/A'}</td> {/* Assuming 'country' exists or N/A */}
@@ -206,7 +214,7 @@ function Npos() {
                         </div>
 
                         {/* Pagination Section */}
-                        <div className="mt-4 flex justify-between items-center">
+                        {/* <div className="mt-4 flex justify-between items-center">
                             <p className="text-sm font-[Poppins] text-gray-600">
                                 Showing {indexOfFirstAgency + 1} to {Math.min(indexOfLastAgency, agenciesData.length)} of {agenciesData.length} entries
                             </p>
@@ -234,7 +242,7 @@ function Npos() {
                                     <ChevronRight size={20} />
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="mt-10">
                         <div className="flex justify-center gap-4 pb-4 max-sm:flex-col">

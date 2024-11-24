@@ -7,6 +7,7 @@ import { createAgency } from '../../components/api/Agency';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
+import { useParams } from 'react-router-dom';
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
     <div className="mb-3">
@@ -350,6 +351,8 @@ const CreateNpo = () => {
     // Get token from session storage
     const token = sessionStorage.getItem('access_token');
     const navigate = useNavigate();
+    const { id } = useParams();
+    console.log(id);
 
     // State variables
     const [selectedUserId, setSelectedUserId] = useState('');
@@ -359,7 +362,7 @@ const CreateNpo = () => {
         company_name: '',
         company_type: 'npo',
         manager: selectedUserId,
-        agency: 6,
+        agency: id || '',
         email: '',
         address: '',
         country: '',
@@ -452,7 +455,7 @@ const CreateNpo = () => {
             );
             console.log('Agency created:', response.data);
             navigate('/npos')
-            alert('Mpo Created Sucessfully')
+            alert('Npo Created Sucessfully')
         } catch (error) {
             console.error('Error posting agency data:', error.response ? error.response.data : error.message);
             alert('* Fields cannot be empty')
@@ -523,7 +526,7 @@ const CreateNpo = () => {
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
-                <h1 className="text-2xl mt-10 font-bold mb-2">Npo Details</h1>
+                <h1 className="text-2xl mt-10 font-bold mb-2">Create Npo</h1>
                 <h1 className="mb-6">* Mandatory Fields</h1>
 
                 <div className="grid mt-2 w-full lg:grid-cols-12 gap-x-6">
@@ -581,11 +584,19 @@ const CreateNpo = () => {
                         {/* <DropdownSelect label="Date Begin" options={['Option 1', 'Option 2']} value={agencyData.date_begin} onChange={handleChange} name="date_begin" />
             <DropdownSelect label="Date Ending" options={['Option 1', 'Option 2']} value={agencyData.date_end} onChange={handleChange} name="date_end" /> */}
                         <InputField
-                            label="Date Begin"
+                            label="Date Begin *"
                             placeholder="Select date"
                             name="date_begin"
                             value={agencyData.date_begin}
                             onChange={(e) => handleChange(e, 'date_begin')}
+                            type="date" // Setting the type as 'date' to show a date picker
+                        />
+                        <InputField
+                            label="Date Ending *"
+                            placeholder="Select date"
+                            name="date_ending"
+                            value={agencyData.date_ending}
+                            onChange={(e) => handleChange(e, 'date_ending')}
                             type="date" // Setting the type as 'date' to show a date picker
                         />
                         {/* <DropdownSelect label="Select Main Idioma" options={['Language 1', 'Language 2']} value={agencyData.idioma} onChange={handleChange} name="idioma" /> */}

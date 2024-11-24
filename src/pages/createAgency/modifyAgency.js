@@ -475,7 +475,11 @@ function ModifyAgency() {
             navigate('/agencies')
             alert('Agency Updated Sucessfully')
         } catch (error) {
-            console.error('Error posting agency data:', error.response ? error.response.data : error.message);
+            console.error('Error updating agency:', error);
+    
+            // Extract and show error message from the response
+            const errorMessage = error.response?.data?.detail || 'Failed to update agency.';
+            alert(errorMessage);
         }
     };
 
@@ -557,6 +561,23 @@ function ModifyAgency() {
                             value={selectedLanguage || agencyData.main_idioma}        // The selected country value from state
                             onChange={handleLanguageSelect} // Handler to update state on country change
                             name="idioma"                 // Name of the field for form submission
+                        />
+
+                        <InputField
+                            label="Date Begin"
+                            placeholder="Select date"
+                            name="date_begin"
+                            value={agencyData.date_begin}
+                            onChange={(e) => handleChange(e, 'date_begin')}
+                            type="date" // Setting the type as 'date' to show a date picker
+                            />
+                            <InputField
+                            label="Date Ending"
+                            placeholder="Select date"
+                            name="date_ending"
+                            value={agencyData.date_ending}
+                            onChange={(e) => handleChange(e, 'date_ending')}
+                            type="date" // Setting the type as 'date' to show a date picker
                         />
                         <div className="flex justify-center gap-4 pb-4">
                             <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">
