@@ -8,6 +8,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
 import { useLocation } from 'react-router-dom';
+import { Navbar } from '../../components/navBar/NavBar';
+
+import Swal from 'sweetalert2'
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
     <div className="mb-3">
@@ -33,6 +36,7 @@ const DropdownSelect = ({ label, options, value, onChange, name }) => (
 
 
 const CreateSlots = () => {
+    const Swal = require('sweetalert2')
     const token = sessionStorage.getItem('access_token');
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -57,10 +61,30 @@ const CreateSlots = () => {
                 }
             );
             navigate('/slots-data')
-            alert('Slot Created Sucessfully')
+            Swal.fire({
+                title: "Slot Created Sucessfully!",
+                icon: "success"
+            });
         } catch (error) {
-            console.error('Error posting agency data:', error.response ? error.response.data : error.message);
-            alert('* Fields cannot be empty')
+            const statusCode = error.response.status;
+            const errorMessage = error.response.data.detail || error.message;
+            if (statusCode === 401) {
+                // Unauthorized - show error icon
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+                Swal.fire({
+                    icon: "question",
+                    title: errorMessage,
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            }
         }
     };
 
@@ -80,6 +104,7 @@ const CreateSlots = () => {
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
+                <Navbar/>
                 <h1 className="text-2xl mt-10 font-bold mb-2">Create Slot</h1>
                 <h1 className="mb-6">* Mandatory Fields</h1>
 

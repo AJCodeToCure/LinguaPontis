@@ -6,6 +6,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
+import { Navbar } from '../../components/navBar/NavBar';
+
+import Swal from 'sweetalert2'
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
     <div className="mb-3">
@@ -346,6 +349,7 @@ const languageOptions = countries.map(language => ({
 }));
 
 function ModifyNpo() {
+    const Swal = require('sweetalert2')
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const token = sessionStorage.getItem('access_token');
@@ -422,11 +426,25 @@ function ModifyNpo() {
                 manager: agencyData.manager || '',
             });
         } catch (error) {
-            console.error('Error getting team:', error);
-    
-            // Extract and show error message from the response
-            const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
-            alert(errorMessage);
+            const statusCode = error.response.status;
+            const errorMessage = error.response.data.detail || error.message;
+            if (statusCode === 401) {
+                // Unauthorized - show error icon
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+                Swal.fire({
+                    icon: "question",
+                    title: errorMessage,
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            }
         }
     };
 
@@ -475,11 +493,31 @@ function ModifyNpo() {
                     },
                 }
             );
-            console.log('Agency created:', response.data);
             navigate('/npos')
-            alert('Npo Updated Sucessfully')
+            Swal.fire({
+                title: "Npo Updated Sucessfully!",
+                icon: "success"
+            });
         } catch (error) {
-            console.error('Error posting agency data:', error.response ? error.response.data : error.message);
+            const statusCode = error.response.status;
+            const errorMessage = error.response.data.detail || error.message;
+            if (statusCode === 401) {
+                // Unauthorized - show error icon
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+                Swal.fire({
+                    icon: "question",
+                    title: errorMessage,
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            }
         }
     };
 
@@ -494,10 +532,19 @@ function ModifyNpo() {
         value: member.user_id, // Use user_id as the value
     }));
 
+    const formatDate = (isoDate) => {
+        const date = new Date(isoDate);
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Month is 0-indexed, so add 1
+        const day = date.getDate().toString().padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
     return (
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
+                <Navbar/>
                 <h1 className="text-2xl mt-10 font-bold">Update Npo</h1>
 
                 <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">
@@ -567,7 +614,7 @@ function ModifyNpo() {
                             label="Date Begin"
                             placeholder="Select date"
                             name="date_begin"
-                            value={agencyData.date_begin}
+                            value={formatDate(agencyData.date_begin)}
                             onChange={(e) => handleChange(e, 'date_begin')}
                             type="date" // Setting the type as 'date' to show a date picker
                         />
@@ -575,7 +622,7 @@ function ModifyNpo() {
                             label="Date Ending"
                             placeholder="Select date"
                             name="date_ending"
-                            value={agencyData.date_ending}
+                            value={formatDate(agencyData.date_ending)}
                             onChange={(e) => handleChange(e, 'date_ending')}
                             type="date" // Setting the type as 'date' to show a date picker
                         />

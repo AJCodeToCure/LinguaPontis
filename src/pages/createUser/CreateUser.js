@@ -5,8 +5,12 @@ import { ChevronDown } from 'lucide-react';
 import axios from 'axios';
 import { API_Base } from '../../components/api/config';
 import { useNavigate } from 'react-router-dom';
+import { Navbar } from '../../components/navBar/NavBar';
+import Swal from 'sweetalert2'
+
 
 function CreateUser() {
+    const Swal = require('sweetalert2')
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const [positions, setPositions] = useState(null);
@@ -36,7 +40,7 @@ function CreateUser() {
             setPermissionGroups(response.data); // Set permission groups in the state
         } catch (error) {
             console.error('Error getting team:', error);
-    
+
             // Extract and show error message from the response
             const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
             alert(errorMessage);
@@ -106,14 +110,31 @@ function CreateUser() {
                     },
                 }
             );
-
-            // Handle success response
-            console.log('User Generated Successfully:', response.data);
-            alert('User created successfully');
+            Swal.fire({
+                title: "User Created Sucessfully!",
+                icon: "success"
+            });
             navigate('/users-management');
         } catch (error) {
-            console.error('Error generating user:', error.response ? error.response.data : error.message);
-            alert('Error generating user');
+            const statusCode = error.response.status;
+            const errorMessage = error.response.data.detail || error.message;
+            if (statusCode === 401) {
+                // Unauthorized - show error icon
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+                Swal.fire({
+                    icon: "question",
+                    title: errorMessage,
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            }
         }
     };
 
@@ -124,17 +145,22 @@ function CreateUser() {
     };
 
     return (
+        
         <div className="flex h-screen">
+            
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+            
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
+            < Navbar />
                 <h1 className="text-2xl mt-10 font-bold mb-6">User Details</h1>
 
                 <div className="grid mt-16 w-full lg:grid-cols-12 gap-x-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
+                    
                         <form onSubmit={handleCreateUser} className="space-y-4">
                             {/* Email Input Field */}
                             <InputField
-                                label="Email"
+                                label="Email *"
                                 placeholder="Enter email"
                                 name="email"
                                 value={email}
@@ -143,7 +169,7 @@ function CreateUser() {
 
                             {/* Username Input Field */}
                             <InputField
-                                label="Username"
+                                label="Username *"
                                 placeholder="Enter username"
                                 name="username"
                                 value={username}
@@ -152,7 +178,7 @@ function CreateUser() {
 
                             {/* Password Input Field */}
                             <InputField
-                                label="Password"
+                                label="Password *"
                                 placeholder="Enter password"
                                 name="password"
                                 type="password"
@@ -170,7 +196,7 @@ function CreateUser() {
                         </form>
                         <div>
                             {/* Dropdown */}
-                            <label className="block text-[var(--darkText)] font-semibold mb-1">Select NPO/Agency</label>
+                            <label className="block text-[var(--darkText)] font-semibold mb-1">Select NPO/Agency *</label>
                             <select
                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                 value={selectedPermission} // Set selected value to the selectedPermission (ID)

@@ -3,9 +3,11 @@ import { Sidebar } from "../../components/sideBar/SideBar";
 import InputField from "../../components/inputField/InputField";
 import Button from "../../components/button/Button";
 import { createEvent } from "../../components/api/Events";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'
 
 const BeneficiaryManagement = () => {
+  const Swal = require('sweetalert2')
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const navigate = useNavigate();
@@ -42,11 +44,13 @@ const BeneficiaryManagement = () => {
     };
 
     console.log("Request Body:", requestData);
-    
+
     try {
       const result = await createEvent(requestData);
-      console.log("Event created successfully:", result);
-      alert("Event created successfully");
+      Swal.fire({
+        title: "Event Created Sucessfully!",
+        icon: "success"
+      });
 
       //navigate to the events page
       navigate('/event-management');

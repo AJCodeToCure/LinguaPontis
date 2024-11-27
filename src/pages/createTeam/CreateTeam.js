@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
 import { useLocation } from 'react-router-dom';
+import Swal from 'sweetalert2'
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
     <div className="mb-3">
@@ -266,6 +267,7 @@ const CreateTeam = () => {
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+    const Swal = require('sweetalert2')
 
     // State variables
     const [selectedUserId, setSelectedUserId] = useState('');
@@ -310,7 +312,7 @@ const CreateTeam = () => {
             setTeamMembers(response.data);
         } catch (error) {
             console.error('Error getting team:', error);
-    
+
             // Extract and show error message from the response
             const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
             alert(errorMessage);
@@ -364,7 +366,7 @@ const CreateTeam = () => {
     //     setTeamData((prevData) => ({ ...prevData, mediators: [selectedId] }));
     // };
 
-    
+
 
     const handleMediatorSelect = (e) => {
         const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value); // Extract selected values
@@ -408,12 +410,31 @@ const CreateTeam = () => {
                     },
                 }
             );
-            console.log('Team created:', response.data);
             navigate('/agencies')
-            alert('Team Created Sucessfully')
+            Swal.fire({
+                title: "Team Created Sucessfully!",
+                icon: "success"
+            });
         } catch (error) {
-            console.error('Error posting agency data:', error.response ? error.response.data : error.message);
-            alert('* Fields cannot be empty')
+            const statusCode = error.response.status;
+            const errorMessage = error.response.data.detail || error.message;
+            if (statusCode === 401) {
+                // Unauthorized - show error icon
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+                Swal.fire({
+                    icon: "question",
+                    title: errorMessage,
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            }
         }
     };
 
@@ -482,7 +503,7 @@ const CreateTeam = () => {
                             name="country"
                         />
                         <InputField
-                            label="Date Begin"
+                            label="Date Begin *"
                             placeholder="Select date"
                             name="date_begin"
                             value={teamData.date_begin}
@@ -490,7 +511,7 @@ const CreateTeam = () => {
                             type="date"
                         />
                         <InputField
-                            label="Date Ending"
+                            label="Date Ending *"
                             placeholder="Select date"
                             name="date_ending"
                             value={teamData.date_ending}

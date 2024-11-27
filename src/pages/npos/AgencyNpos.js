@@ -8,6 +8,35 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_Base } from '../../components/api/config';
 import { useParams } from 'react-router-dom';
+import { Navbar } from '../../components/navBar/NavBar';
+
+
+const Modal = ({ isOpen, onClose, onDelete }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg w-1/3">
+                <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">Delete Data</h2>
+                <p className="text-center text-gray-600 mb-6">Are you sure you want to delete this ?</p>
+                <div className="flex justify-center gap-4">
+                    <button
+                        className="px-6 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        onClick={onClose}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        onClick={onDelete}
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 function AgencyNpos() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -62,7 +91,7 @@ function AgencyNpos() {
             // On success, remove the deleted agency from the state
             setNpos((prev) => prev.filter((agency) => agency.id !== agencyId));
             console.log(`Agency with ID ${agencyId} has been deleted.`);
-            alert('Agency Deleted Sucessfully')
+            closeModal();
         } catch (error) {
             console.error('Error getting team:', error);
 
@@ -94,6 +123,11 @@ function AgencyNpos() {
         }
     };
 
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => setModalOpen(true);
+    const closeModal = () => setModalOpen(false);
+
 
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -112,23 +146,27 @@ function AgencyNpos() {
     const indexOfLastAgency = currentPage * itemsPerPage;
     const indexOfFirstAgency = indexOfLastAgency - itemsPerPage;
     const currentAgencies = agenciesData.slice(indexOfFirstAgency, indexOfLastAgency);
+    const userGroup = sessionStorage.getItem('user_group');
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     return (
         <div className="flex h-screen bg-gray-100">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-20 flex-1 flex flex-col overflow-hidden">
+                <Navbar/>
                 <main className="flex-1 overflow-x-hidden overflow-y-auto bg-white p-6">
                     <div className="container mt-20 max-sm:w-full w-10/12 mx-auto">
                         <div className="flex justify-between items-center mb-6 max-sm:flex-col">
                             <h1 className="text-2xl font-semibold font-[Poppins]">All Npos Data</h1>
                             <div className="flex items-center max-sm:flex-col">
+                            {(userGroup === 'super_user' || userGroup === 'agency_manager') && (
                                 <button
                                     className="px-4 mr-2 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
                                     onClick={() => navigate(`/create-npo/${id}`)}
                                 >
                                     Create Npo
                                 </button>
+                            )}
                                 <div className="relative mr-4 max-sm:mt-5 max-sm:mb-5">
                                     <input
                                         type="text"
@@ -197,18 +235,24 @@ function AgencyNpos() {
                                                     </span>
                                                 </td>
                                                 <td className="p-3">
-                                                    <button
+                                                    {/* <button
                                                         onClick={() => handleDelete(npo.id)}  // Trigger delete for NPO
-                                                    >
+                                                    > */}
+                                                    {(userGroup === 'super_user' || userGroup === 'agency_manager') && (
+                                                    <button onClick={openModal}>
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                                         </svg>
                                                     </button>
+                                                    )}
+                                                    <Modal isOpen={isModalOpen} onClose={closeModal} onDelete={() => handleDelete(npo.id)} />
+                                                    {(userGroup === 'super_user' || userGroup === 'agency_manager') && (
                                                     <button className='ml-2' onClick={() => handleModify(npo.id)}>  {/* Pass npo.id to handleModify */}
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                                         </svg>
                                                     </button>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))

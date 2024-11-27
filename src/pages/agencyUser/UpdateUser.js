@@ -4,8 +4,12 @@ import axios from 'axios';
 import InputField from '../../components/inputField/InputField';
 import { useNavigate } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
+import { Navbar } from '../../components/navBar/NavBar';
+
+import Swal from 'sweetalert2'
 
 function UpdateUser() {
+    const Swal = require('sweetalert2')
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const API = API_Base;
@@ -40,7 +44,7 @@ function UpdateUser() {
             setUserData(response.data);  // Update userData with fetched data
         } catch (error) {
             console.error('Error updating profile:', error);
-    
+
             // Extract and show error message from the response
             const errorMessage = error.response?.data?.detail || 'Failed to update profile.';
             alert(errorMessage);
@@ -75,10 +79,10 @@ function UpdateUser() {
                     },
                 }
             );
-
-            // Handle success response
-            console.log('User updated successfully:', response.data);
-            alert('User updated successfully');
+            Swal.fire({
+                title: "User Updated Sucessfully!",
+                icon: "success"
+            });
             navigate('/dashboard');
         } catch (error) {
             console.error('Error updating user:', error.response ? error.response.data : error.message);
@@ -99,6 +103,7 @@ function UpdateUser() {
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
+                <Navbar/>
                 <h1 className="text-2xl mt-10 font-bold mb-2">Update Profile</h1>
                 <div className="grid mt-2 w-full lg:grid-cols-12 gap-x-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">

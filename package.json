@@ -22,6 +22,7 @@
     "rimraf": "^6.0.1",
     "string-width-cjs": "^5.1.1",
     "strip-ansi-cjs": "^8.0.0",
+    "sweetalert2": "^11.14.5",
     "web-vitals": "^4.2.4"
   },
   "scripts": {

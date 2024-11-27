@@ -6,6 +6,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
+import { Navbar } from '../../components/navBar/NavBar';
+
+import Swal from 'sweetalert2'
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
     <div className="mb-3">
@@ -352,6 +355,7 @@ function CreateEvent() {
     const navigate = useNavigate();
     const { id } = useParams();
     const API = API_Base;
+    const Swal = require('sweetalert2')
 
     const [selectedUserId, setSelectedUserId] = useState('');
     const [selectedMediatorId, setSelectedMediatorId] = useState("");
@@ -390,7 +394,7 @@ function CreateEvent() {
                 setMembers(response.data);
             } catch (error) {
                 console.error('Error getting team:', error);
-        
+
                 // Extract and show error message from the response
                 const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
                 alert(errorMessage);
@@ -441,9 +445,30 @@ function CreateEvent() {
                 }
             );
             navigate('/agencies')
-            alert('Event created Sucessfully')
+            Swal.fire({
+                title: "Event Created Sucessfully!",
+                icon: "success"
+            });
         } catch (error) {
-            console.error('Error posting agency data:', error.response ? error.response.data : error.message);
+            const statusCode = error.response.status;
+            const errorMessage = error.response.data.detail || error.message;
+            if (statusCode === 401) {
+                // Unauthorized - show error icon
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+                Swal.fire({
+                    icon: "question",
+                    title: errorMessage,
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: errorMessage,
+                });
+            }
         }
     };
 
@@ -495,7 +520,9 @@ function CreateEvent() {
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
+                <Navbar/>
                 <h1 className="text-2xl mt-10 font-bold">Create Event</h1>
+                <h1 className="mb-6">* Mandatory Fields</h1>
                 <div className='flex sm:flex-col md:flex-row lg:flex-row'>
                     <div className="grid mt-16 w-full lg:grid-cols-10">
 
@@ -529,7 +556,7 @@ function CreateEvent() {
                                 name="country"
                             />
                             <InputField
-                                label="Date Begin"
+                                label="Date Begin *"
                                 placeholder="Select date"
                                 name="date_begin"
                                 value={agencyData.date_begin}
@@ -537,7 +564,7 @@ function CreateEvent() {
                                 type="datetime-local"
                             />
                             <InputField
-                                label="Date End"
+                                label="Date End *"
                                 placeholder="Select date"
                                 name="date_ending"
                                 value={agencyData.date_ending}

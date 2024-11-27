@@ -8,6 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_Base } from "../../components/api/config";
 
+import Swal from 'sweetalert2'
+
+
 
 const Login = () => {
   const [email, setEmail] = useState(''); // State for email input
@@ -43,11 +46,30 @@ const Login = () => {
       sessionStorage.setItem('user_group', user_group);
       sessionStorage.setItem('access_token', access);
     } catch (error) {
-      console.error('Error getting team:', error);
+      const statusCode = error.response?.status || 404;
+      const errorMessage = error.response?.data.detail || error.message || 'Backend server is not responding.';
+      if (statusCode === 401) {
+          // Unauthorized - show error icon
+          Swal.fire({
+              icon: "error",
+              title: errorMessage,
+          });
+      } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+          Swal.fire({
+              icon: "question",
+              title: errorMessage,
+          });
+      } else {
+          Swal.fire({
+              icon: "error",
+              title: errorMessage,
+          });
+      }
+      // console.error('Error getting team:', error);
 
-      // Extract and show error message from the response
-      const errorMessage = error.response?.data?.detail || 'Failed to getting the team.';
-      alert(errorMessage);
+      // // Extract and show error message from the response
+      // const errorMessage = error.response?.data?.detail || 'Backend server is not responding.';
+      // alert(errorMessage);
   }
   };
 

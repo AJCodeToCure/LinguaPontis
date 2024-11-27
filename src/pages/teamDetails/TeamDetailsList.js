@@ -9,6 +9,34 @@ import axios from 'axios';
 import { AgenciesManagementIcon } from '../../assets/TeamManagementIcon';
 import { useNavigate } from 'react-router-dom';
 
+const Modal = ({ isOpen, onClose, onDelete }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg w-1/3">
+                <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">Delete Data</h2>
+                <p className="text-center text-gray-600 mb-6">Are you sure you want to delete this ?</p>
+                <div className="flex justify-center gap-4">
+                    <button
+                        className="px-6 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        onClick={onClose}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        onClick={onDelete}
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
 const TeamDetailslist = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1); // Track current page
@@ -49,7 +77,7 @@ const TeamDetailslist = () => {
             });
             navigate("/agencies");
 
-            alert('Team deleted successfully!');
+            closeModal();
         } catch (error) {
             console.error('Error getting team:', error);
 
@@ -58,6 +86,11 @@ const TeamDetailslist = () => {
             alert(errorMessage);
         }
     };
+
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => setModalOpen(true);
+    const closeModal = () => setModalOpen(false);
 
 
     // Example team data, you can have more entries
@@ -145,6 +178,8 @@ const TeamDetailslist = () => {
     // Create pagination buttons dynamically based on the number of pages
     const totalPages = Math.ceil(teamsData.length / cardsPerPage);
     const paginationItems = [];
+    const userGroup = sessionStorage.getItem('user_group');
+
 
     for (let i = 1; i <= totalPages; i++) {
         paginationItems.push(
@@ -199,12 +234,17 @@ const TeamDetailslist = () => {
                                                     </div>
                                                 </div>
                                                 <div className='flex justify-center py-4'>
+                                                {(userGroup === 'super_user' || userGroup === 'agency_manager' || userGroup === 'npo_manager') && (
                                                     <button onClick={() => navigate(`/modify-team/${team.id}`)} className='mt-1 ml-4 px-4 mr-2 py-2 bg-yellow-400 text-black font-semibold rounded-md hover:bg-yellow-600'>
                                                         EDIT
                                                     </button>
-                                                    <button onClick={() => handleDelete(team.id)} className='mt-1 ml-4 px-4 mr-2 py-2 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600'>
+                                                )}
+                                                {(userGroup === 'super_user' || userGroup === 'agency_manager' || userGroup === 'npo_manager') && (
+                                                    <button onClick={openModal} className='mt-1 ml-4 px-4 mr-2 py-2 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600'>
                                                         DELETE
                                                     </button>
+                                                )}
+                                                    <Modal isOpen={isModalOpen} onClose={closeModal} onDelete={() => handleDelete(team.id)} />
                                                 </div>
                                                 <div className="flex justify-center">
                                                     <button className=" text-white rounded-full px-4 py-1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -226,7 +266,7 @@ const TeamDetailslist = () => {
                                     //     </div>
                                     // ))
                                 ) : (
-                                    <p>Loading...</p> // Display loading if no data is yet available
+                                    <p>No Team</p> // Display loading if no data is yet available
                                 )}
 
 

@@ -4,8 +4,11 @@ import axios from 'axios';
 import InputField from '../../components/inputField/InputField';
 import { useNavigate } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
+import { Navbar } from '../../components/navBar/NavBar';
+import Swal from 'sweetalert2'
 
 function ChangePassword() {
+    const Swal = require('sweetalert2')
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const API = API_Base;
@@ -25,7 +28,7 @@ function ChangePassword() {
         }));
     };
 
-    const updatePassowrd = () => {
+    const updatePassowrd = async () => {
         const { email, password, confirm_password } = formData;
         const payload = {
             email,
@@ -34,24 +37,27 @@ function ChangePassword() {
         };
 
         try {
-            const response = axios.post(`${API}/api/update_profile/`, payload, {
+            const response = await axios.post(`${API}/api/update_profile/`, payload, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
             });
-
-            console.log('Profile updated successfully:', response.data);
-            alert('Password updated successfully');
-            navigate('/update-user')
-
+        
+            Swal.fire({
+                title: "Password updated successfully!",
+                icon: "success",
+            });
+        
+            navigate('/update-user');
         } catch (error) {
             console.error('Error updating profile:', error);
-    
+        
             // Extract and show error message from the response
-            const errorMessage = error.response?.data?.detail || 'Failed to updating profile.';
+            const errorMessage = error.response?.data?.detail || 'Failed to update profile.';
             alert(errorMessage);
         }
+        
     };
 
     const handleChangePassword = () => {
@@ -61,6 +67,7 @@ function ChangePassword() {
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
+                <Navbar />
                 <h1 className="text-2xl mt-10 font-bold mb-2">Update Password</h1>
                 <div className="grid mt-2 w-full lg:grid-cols-12 gap-x-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
@@ -71,6 +78,7 @@ function ChangePassword() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
+                                required={true}
                             />
                             <InputField
                                 label="Password"
@@ -79,6 +87,7 @@ function ChangePassword() {
                                 type="password"
                                 value={formData.password}
                                 onChange={handleChange}
+                                required={true}
                             />
                             <InputField
                                 label="Confirm Password"
@@ -87,6 +96,7 @@ function ChangePassword() {
                                 type="password"
                                 value={formData.confirm_password}
                                 onChange={handleChange}
+                                required={true}
                             />
                             <button type="submit" className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Submit</button>
                         </form>

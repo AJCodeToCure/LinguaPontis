@@ -7,6 +7,9 @@ import { createAgency } from '../../components/api/Agency';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
+import { Navbar } from '../../components/navBar/NavBar';
+
+import Swal from 'sweetalert2'
 
 const DropdownSelect = ({ label, options, value, onChange, name }) => (
   <div className="mb-3">
@@ -350,6 +353,7 @@ const CreateAgency = () => {
   // Get token from session storage
   const token = sessionStorage.getItem('access_token');
   const navigate = useNavigate();
+  const Swal = require('sweetalert2')
 
   // State variables
   const [selectedUserId, setSelectedUserId] = useState('');
@@ -450,12 +454,31 @@ const CreateAgency = () => {
           },
         }
       );
-      console.log('Agency created:', response.data);
       navigate('/agencies')
-      alert('Agency Created Sucessfully')
+      Swal.fire({
+        title: "Agency Created Sucessfully!",
+        icon: "success"
+      });
     } catch (error) {
-      console.error('Error posting agency data:', error.response ? error.response.data : error.message);
-      alert('* Fields cannot be empty')
+      const statusCode = error.response.status;
+      const errorMessage = error.response.data.detail || error.message;
+      if (statusCode === 401) {
+        // Unauthorized - show error icon
+        Swal.fire({
+          icon: "error",
+          title: errorMessage,
+        });
+      } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+        Swal.fire({
+          icon: "question",
+          title: errorMessage,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: errorMessage,
+        });
+      }
     }
   };
 
@@ -523,6 +546,7 @@ const CreateAgency = () => {
     <div className="flex h-screen">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
+        <Navbar/>
         <h1 className="text-2xl mt-10 font-bold mb-2">Create Agency/NPO</h1>
         <h1 className="mb-6">* Mandatory Fields</h1>
 
@@ -581,7 +605,7 @@ const CreateAgency = () => {
             {/* <DropdownSelect label="Date Begin" options={['Option 1', 'Option 2']} value={agencyData.date_begin} onChange={handleChange} name="date_begin" />
             <DropdownSelect label="Date Ending" options={['Option 1', 'Option 2']} value={agencyData.date_end} onChange={handleChange} name="date_end" /> */}
             <InputField
-              label="Date Begin"
+              label="Date Begin *"
               placeholder="Select date"
               name="date_begin"
               value={agencyData.date_begin}
@@ -589,7 +613,7 @@ const CreateAgency = () => {
               type="date" // Setting the type as 'date' to show a date picker
             />
             <InputField
-              label="Date Ending"
+              label="Date Ending *"
               placeholder="Select date"
               name="date_ending"
               value={agencyData.date_ending}
