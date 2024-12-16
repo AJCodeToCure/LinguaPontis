@@ -804,16 +804,16 @@ const FeedbackCard = () => {
     };
 
     return (
-        <div className="max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="bg-white border-2 border-red-500 shadow-lg rounded-lg overflow-hidden">
             <div className="p-4">
-                <div className='flex justify-center gap-1'>
+                <div>
                     {feedbackData && feedbackData.length > 0 ? (
                         feedbackData.map((feedback) => (
-                            <div key={feedback.id} className="max-w-sm mx-auto bg-white mb-2 shadow-lg rounded-lg overflow-hidden p-4">
+                            <div key={feedback.id} className="max-w-sm mx-auto bg-white mb-2 shadow-lg rounded-lg p-4">
                                 <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-800">
-                                    {feedback.created_by_role === "event_manager" ? "Manager" : "Mediator"} - Feedback
-                                </h3>
+                                    <h3 className="text-lg font-semibold text-gray-800">
+                                        {feedback.created_by_role === "event_manager" ? "Manager" : "Mediator"} {feedback.mediator_name} - Feedback
+                                    </h3>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
                                         <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Zm3.094 8.016a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                                     </svg>
@@ -996,7 +996,6 @@ const SpecificEvent = () => {
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="w-full pl-20 flex-1 flex flex-col p- overflow-auto">
                 <Navbar />
-
                 <div className="w-full flex flex-col items-center mt-10 mb-10">
 
                     <div className="flex justify-between w-1/2 max-sm:w-full text-gray-500">
@@ -1011,108 +1010,221 @@ const SpecificEvent = () => {
                     {/* Horizontal line */}
                     <div className="w-1/2 max-sm:w-full border-b-2 border-gray-200 mt-2"></div>
                 </div>
-
-                <div className='flex'>
+                <div>
                     <div className='border rounded-lg px-3'>
                         <div className="mb-1 p-4 flex justify-between items-center">
                             <h1 className="text-2xl font-bold font-[Nunito]">Event Details</h1>
-                            {/* <div className="flex space-x-2">
-                            <button onClick={() => navigate(`/create-event/${id}`)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Create Event</button>
-                        </div> */}
-                        </div>
-                        <div className="w-full max-sm:w-full border-b-2 border-gray-200 mb-4"></div>
-                        {events.map((event) => (
-                            <div className="overflow-x-auto">
-
-                                <table className="min-w-full bg-white">
-                                    <thead className='bg-[#EAECF0]'>
-                                        <tr className="">
-                                            <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Name</th>
-                                            <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Location</th>
-                                            <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Start Time</th>
-                                            <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">End Time</th>
-                                            <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Attendees</th>
-                                            <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Status</th>
-                                            <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr key={event.id} className="border-b">
-                                            <td className="py-2 px-3 font-bold font-inter text-[14px] text-[var(--lightTextGray)]">{event.name || 'N/A'}</td>
-                                            <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.address || event.city || event.country || 'N/A'}</td>
-                                            <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.date_begin ? new Date(event.date_begin).toLocaleString() : 'N/A'}</td>
-                                            <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.date_ending ? new Date(event.date_ending).toLocaleString() : 'N/A'}</td>
-                                            <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">
-                                                {event.mediators && event.mediators.length > 0
-                                                    ? event.mediators.map((mediator) => (
-                                                        <div key={mediator.id}>
-                                                            {mediator.mediator_username} ({mediator.mediator_email})
-                                                        </div>
-                                                    ))
-                                                    : 'No Mediators'}
-                                            </td>
-                                            <td className="py-2 px-3">
-                                                <span className={`flex px-2 py-1 rounded-full text-xs ${event.is_confirmed ? 'bg-green-200 font-bold text-green-900' : 'font-bold bg-[#F2F4F7] text-[#364254]'}`}>
-                                                    <span className='mr-2 mt-[5px] pl-1'>
-                                                        {event.is_confirmed ? <GreenCircleIcon /> : <GrayCircleIcon />}
-                                                    </span>
-                                                    {event.is_confirmed ? 'Confirmed' : 'Pending'}
-                                                </span>
-                                            </td>
-                                            <td className="py-2 px-3">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div className="flex justify-end py-6 px-6 space-x-2">
-                                    <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Date</button>
-                                    <DateUpdateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} events={events} />
-                                    {role === 'super_user' ? (
-                                        // Show both buttons if the role is 'super_user'
-                                        <>
-                                            <button
-                                                onClick={() => setMediatorfeedbackUpdateModal(true)}
-                                                className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
-                                            >
-                                                Mediator Feedback
-                                            </button>
-                                            <button
-                                                onClick={() => setEventfeedbackUpdateModal(true)}
-                                                className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
-                                            >
-                                                Event Feedback
-                                            </button>
-                                        </>
-                                    ) : role === 'mediator' ? (
-                                        // Show Mediator Feedback button if role is 'event_manager' or 'mediator'
+                            <div className="flex justify-end px-6 space-x-2">
+                                <button onClick={() => navigate(`/update-time-request/${id}`)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Time Request</button>
+                                <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Date</button>
+                                <DateUpdateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} events={events} />
+                                {role === 'super_user' ? (
+                                    // Show both buttons if the role is 'super_user'
+                                    <>
                                         <button
                                             onClick={() => setMediatorfeedbackUpdateModal(true)}
                                             className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
                                         >
                                             Mediator Feedback
                                         </button>
-                                    ) : role === 'event_manager' ? (
-                                        // Show Mediator Feedback button if role is 'event_manager' or 'mediator'
                                         <button
                                             onClick={() => setEventfeedbackUpdateModal(true)}
                                             className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
                                         >
                                             Event Feedback
                                         </button>
-                                    ) : (
-                                        // Show Event Feedback button for any other role
-                                        <p></p>
+                                    </>
+                                ) : role === 'mediator' ? (
+                                    // Show Mediator Feedback button if role is 'event_manager' or 'mediator'
+                                    <button
+                                        onClick={() => setMediatorfeedbackUpdateModal(true)}
+                                        className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
+                                    >
+                                        Mediator Feedback
+                                    </button>
+                                ) : role === 'event_manager' ? (
+                                    // Show Mediator Feedback button if role is 'event_manager' or 'mediator'
+                                    <button
+                                        onClick={() => setEventfeedbackUpdateModal(true)}
+                                        className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
+                                    >
+                                        Event Feedback
+                                    </button>
+                                ) : (
+                                    // Show Event Feedback button for any other role
+                                    <p></p>
 
-                                    )}
-                                    <EventFeedbackModal isOpen={isEventFeedbackModalOpen} onClose={() => setEventfeedbackUpdateModal(false)} events={events} />
-                                    <MediaotorFeedbackModal isOpen={isMediatorFeedbackModalOpen} onClose={() => setMediatorfeedbackUpdateModal(false)} events={events} />
+                                )}
+                                <EventFeedbackModal isOpen={isEventFeedbackModalOpen} onClose={() => setEventfeedbackUpdateModal(false)} events={events} />
+                                <MediaotorFeedbackModal isOpen={isMediatorFeedbackModalOpen} onClose={() => setMediatorfeedbackUpdateModal(false)} events={events} />
+                            </div>
+                        </div>
+                        <div className="w-full max-sm:w-full border-b-2 border-gray-200 mb-4"></div>
+                        {events.map((event) => (
+                            <div className="overflow-x-auto">
+                                <div className="w-full mb-6 lg:mb-0 lg:pr-4">
+                                    <div>
+                                        {events ? (
+                                            events.map((team) => (
+                                                <div key={team.id} className="team-card">
+
+                                                    <div className="mx-auto bg-[#EAECF0] rounded-lg shadow-lg p-5">
+
+                                                        {event.time_change_history && event.time_change_history.length > 0 && (
+                                                            <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6 rounded-lg shadow-lg">
+                                                                <div className="flex items-center justify-between">
+                                                                    {/* Heading Section */}
+                                                                    <div>
+                                                                        <h3 className="font-semibold text-xl text-yellow-800">Event Time Change</h3>
+                                                                    </div>
+
+                                                                    {/* Change Date Display */}
+                                                                    <div>
+                                                                        +
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Main Event Details */}
+                                                                {event.time_change_history.map((change) => (
+                                                                    <div key={change.id} className="mt-4">
+                                                                        <p className="text-sm text-gray-600">
+                                                                            Updated by: <span className="font-semibold">{change.change_by}</span>
+                                                                        </p>
+                                                                        <p className="font-semibold text-gray-800">Reason: <span className="text-gray-600">{change.reason}</span></p>
+                                                                        <p className="text-gray-600">
+                                                                            Note: <span className="italic">{change.note || "No notes available."}</span>
+                                                                        </p>
+                                                                        <div className="mt-2 flex justify-between">
+                                                                            <div>
+                                                                                <p className="text-sm text-gray-500">Previous Event Time:</p>
+                                                                                <p className="font-semibold text-gray-700">
+                                                                                    {new Date(change.previous_date_begin).toLocaleString()} -
+                                                                                    {new Date(change.previous_date_ending).toLocaleString()}
+                                                                                </p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <p className="text-sm text-gray-500">Current Event Time:</p>
+                                                                                <p className="font-semibold text-gray-700">
+                                                                                    {new Date(change.current_date_begin).toLocaleString()} -
+                                                                                    {new Date(change.current_date_ending).toLocaleString()}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+
+                                                        <table className="min-w-full bg-white">
+                                                            <thead className='bg-[var(--cardTeamBg)]'>
+                                                                <tr className="">
+                                                                    <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Name</th>
+                                                                    <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Start Time</th>
+                                                                    <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">End Time</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr key={event.id} className="border-b">
+                                                                    <td className="py-2 px-3 font-bold font-inter text-[14px] text-[var(--lightTextGray)]">{event.name || 'N/A'}</td>
+                                                                    <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.date_begin ? new Date(event.date_begin).toLocaleString() : 'N/A'}</td>
+                                                                    <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.date_ending ? new Date(event.date_ending).toLocaleString() : 'N/A'}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+
+                                                        <div className='bg-white h-auto p-4'>
+                                                            <div className="mb-4">
+                                                                <div className='border-2 p-4'>
+                                                                    <p className="font-bold w-44">Details: </p>
+                                                                    <div className='p-2'>
+                                                                        <div className='flex'>
+                                                                            <div className='w-20'>Email:</div>
+                                                                            <div className='text-red-500 font-bold'>{event.email || 'N-A'}</div>
+                                                                        </div>
+                                                                        <div className='flex'>
+                                                                            <div className='w-20'>Phone:</div>
+                                                                            <div className='text-red-500 font-bold'>{event.phone || 'N-A'}</div>
+                                                                        </div>
+                                                                        <div className='flex'>
+                                                                            <div className='w-20'>City:</div>
+                                                                            <div className='text-red-500 font-bold'>{event.city || 'N-A'}</div>
+                                                                        </div>
+                                                                        <div className='flex'>
+                                                                            <div className='w-20'>Country:</div>
+                                                                            <div className='text-red-500 font-bold'>{event.country || 'N-A'}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className='flex gap-24 border-2 p-4'>
+                                                                    <div className='font-bold w-28'>Mediators:</div>
+                                                                    <div>
+                                                                        <ul className='font-serif w-full'>
+                                                                            {team.mediators && team.mediators.map((mediator, index) => {
+                                                                                let circleColor = 'gray';
+                                                                                if (mediator.is_confirm === true) {
+                                                                                    circleColor = 'green';
+                                                                                } else if (mediator.is_confirm === false) {
+                                                                                    circleColor = 'red';
+                                                                                }
+
+                                                                                return (
+                                                                                    <li key={mediator.id} className="flex justify-between w-full items-center">
+                                                                                        <span className='w-44'>{index + 1}. {mediator.mediator_username}</span>
+
+                                                                                        <span
+                                                                                            className={`h-3.5 w-3.5 rounded-full ${circleColor === 'green' ? 'bg-green-500' : circleColor === 'red' ? 'bg-red-500' : 'bg-gray-400'}`}
+                                                                                        />
+                                                                                    </li>
+                                                                                );
+                                                                            })}
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className='flex gap-24 border-2 p-4'>
+                                                                    <div className='font-bold w-28'>Beneficieries:</div>
+                                                                    <div>
+                                                                        <ul className='font-serif w-full'>
+                                                                            {team.beneficiaries && team.beneficiaries.map((mediator, index) => {
+                                                                                let circleColor = 'gray';
+                                                                                if (mediator.is_confirm === true) {
+                                                                                    circleColor = 'green';
+                                                                                } else if (mediator.is_confirm === false) {
+                                                                                    circleColor = 'red';
+                                                                                }
+
+                                                                                return (
+                                                                                    <li key={mediator.id} className="flex justify-between w-full items-center">
+                                                                                        <span className='w-44'>{index + 1}. {mediator.beneficiary_username}</span>
+
+                                                                                        <span
+                                                                                            className={`h-3.5 w-3.5 rounded-full ${circleColor === 'green' ? 'bg-green-500' : circleColor === 'red' ? 'bg-red-500' : 'bg-gray-400'}`}
+                                                                                        />
+                                                                                    </li>
+                                                                                );
+                                                                            })}
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            ))
+                                        ) : (
+                                            <p>No Team</p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                    <div>
-                        <FeedbackCard />
-                    </div>
+
+                </div>
+                <div>
+                    <FeedbackCard />
                 </div>
             </div>
         </div>

@@ -665,6 +665,7 @@ function CreateEvent() {
                                 <table className="min-w-full bg-white table-auto">
                                     <thead>
                                         <tr className="border-b">
+                                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Mediator</th>
                                             <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Date</th>
                                             <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Slot</th>
                                         </tr>
@@ -675,6 +676,7 @@ function CreateEvent() {
                                                 key={slot.id}
                                                 className="hover:bg-gray-50 border-b transition duration-300 ease-in-out"
                                             >
+                                                <td className="px-4 py-3 text-sm text-gray-600">{slot.mediator_name}</td>
                                                 <td className="px-4 py-3 text-sm text-gray-600">{slot.formatted_date}</td>
                                                 <td className="px-4 py-3 text-sm text-gray-600">{slot.time_range}</td>
                                             </tr>

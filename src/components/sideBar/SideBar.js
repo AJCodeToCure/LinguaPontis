@@ -96,31 +96,31 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
     },
     ...(userGroup === 'super_user' || userGroup === 'agency_manager' || userGroup === 'npo_manager'
       ? [
-    {
-      icon: <UserManagementIcon className="w-6 h-6" />, // Add the User Management icon here
-      label: 'User Management',
-      link: '/user-management', // The link for User Management page
-      action: () => navigate('/users-management')  // Navigate directly to User Management page
-    }]:[]),
+        {
+          icon: <UserManagementIcon className="w-6 h-6" />, // Add the User Management icon here
+          label: 'User Management',
+          link: '/user-management', // The link for User Management page
+          action: () => navigate('/users-management')  // Navigate directly to User Management page
+        }] : []),
     // {
     //   icon: <EventManagementIcons className="w-6 h-6" />,
     //   label: 'Event Management',
     //   link: '/event-management',
     //   action: () => navigate('/event-management')  // Navigate directly to Event Management
     // },
-    
+
     ...(userGroup === 'super_user' || userGroup === 'agency_manager'
       ? [
-          {
-            icon: <AgenciesManagementIcon className="w-6 h-6" />,
-            label: 'Agencies',
-            link: '/agencies',
-            action: () => navigate('/agencies') // Navigate directly to Agencies
-          }
-        ]
+        {
+          icon: <AgenciesManagementIcon className="w-6 h-6" />,
+          label: 'Agencies',
+          link: '/agencies',
+          action: () => navigate('/agencies') // Navigate directly to Agencies
+        }
+      ]
       : []),
-      ...(userGroup === 'super_user' || userGroup === 'agency_manager' || userGroup === 'npo_manager'
-        ? [
+    ...(userGroup === 'super_user' || userGroup === 'agency_manager' || userGroup === 'npo_manager'
+      ? [
         {
           icon: <AgenciesManagementIcon className="w-6 h-6" />,
           label: 'Npos',
@@ -130,7 +130,7 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
       ]
       : [])
     ,
-      
+
     {
       icon: <TeamManagementIcon className="w-6 h-6" />,
       label: 'Teams',
@@ -139,14 +139,21 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
     },
     ...(userGroup === 'mediator'
       ? [
-    {
-      icon: <EventManagementIcons className="w-6 h-6" />,
-      label: 'Slots',
-      link: '/create-slots',
-      action: () => navigate('/slots-data')  // Navigate directly to Event Management
-    }
-  ]
-  : []),
+        {
+          icon: <EventManagementIcons className="w-6 h-6" />,
+          label: 'Slots',
+          link: '/create-slots',
+          action: () => navigate('/slots-data')  // Navigate directly to Event Management
+        }
+      ]
+      : []),
+ 
+      {
+        icon: <EventManagementIcons className="w-6 h-6" />,
+        label: 'Time Requests',
+        link: '/update-requests',
+        action: () => navigate('/update-requests') 
+      },
     // {
     //   icon: <CreatAgencyIcons className="w-6 h-6" />,
     //   label: 'Create Agency',

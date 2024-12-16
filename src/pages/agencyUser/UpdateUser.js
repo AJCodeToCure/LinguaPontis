@@ -5,14 +5,14 @@ import InputField from '../../components/inputField/InputField';
 import { useNavigate } from 'react-router-dom';
 import { API_Base } from '../../components/api/config';
 import { Navbar } from '../../components/navBar/NavBar';
-
-import Swal from 'sweetalert2'
+import UserPfp from "../../assets/images/userpfp.png"; // Fallback image
+import Swal from 'sweetalert2';
 
 function UpdateUser() {
-    const Swal = require('sweetalert2')
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
     const API = API_Base;
+    const [selectedImage, setSelectedImage] = useState(null); // Store the file itself, not object URL
 
     const token = sessionStorage.getItem('access_token');
     const navigate = useNavigate();
@@ -21,7 +21,11 @@ function UpdateUser() {
         first_name: '',
         last_name: '',
         contact: '',
-        address: ''
+        address: '',
+        language_s: '',
+        language_w: '',
+        transportation_mode: '',
+        image: '', // Profile image URL from API
     });
 
     // Handle form input changes
@@ -29,7 +33,7 @@ function UpdateUser() {
         const { name, value } = e.target;
         setUserData((prevState) => ({
             ...prevState,
-            [name]: value // Dynamically update the correct field
+            [name]: value, // Dynamically update the correct field
         }));
     };
 
@@ -43,10 +47,8 @@ function UpdateUser() {
             });
             setUserData(response.data);  // Update userData with fetched data
         } catch (error) {
-            console.error('Error updating profile:', error);
-
-            // Extract and show error message from the response
-            const errorMessage = error.response?.data?.detail || 'Failed to update profile.';
+            console.error('Error fetching user data:', error);
+            const errorMessage = error.response?.data?.detail || 'Failed to fetch user data.';
             alert(errorMessage);
         }
     };
@@ -56,36 +58,57 @@ function UpdateUser() {
         fetchUser();
     }, []);
 
-    // Update user profile
+    // Handle image file change (store file, not URL)
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setSelectedImage(file); // Store the actual file
+        }
+    };
+
     const updateUser = async () => {
-        const payload = {
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            contact: userData.contact,
-            address: userData.address,
-            language_s: userData.language_s,
-            language_w: userData.language_w,
-            transportation_mode: userData.transportation_mode
-        };
+        const formData = new FormData();
+        
+        // Append the selected image or the previous one if none selected
+        if (selectedImage) {
+            formData.append('image', selectedImage);
+        } else if (userData.image) {
+            // If no new image selected, send the existing image (if any)
+            formData.append('image', userData.image);
+        }
+
+        // Append other user data
+        formData.append('first_name', userData.first_name);
+        formData.append('last_name', userData.last_name);
+        formData.append('contact', userData.contact);
+        formData.append('address', userData.address);
+        formData.append('language_s', userData.language_s);
+        formData.append('language_w', userData.language_w);
+        formData.append('transportation_mode', userData.transportation_mode);
 
         try {
             const response = await axios.put(
                 `${API}/api/update_profile/`,
-                payload,
+                formData,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'multipart/form-data',
                     },
                 }
             );
             Swal.fire({
-                title: "User Updated Sucessfully!",
-                icon: "success"
+                title: "Profile Updated Successfully!",
+                icon: "success",
             });
             navigate('/dashboard');
         } catch (error) {
-            console.error('Error updating user:', error.response ? error.response.data : error.message);
+            console.error('Error uploading image:', error.response || error.message);
+            Swal.fire({
+                title: 'Error Uploading Image',
+                icon: 'error',
+                text: error.response ? error.response.data : error.message,
+            });
         }
     };
 
@@ -96,16 +119,18 @@ function UpdateUser() {
     };
 
     const handleChangePassword = () => {
-        navigate('/change-password')
+        navigate('/change-password');
     };
 
     return (
         <div className="flex h-screen">
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="pl-28 flex-1 flex flex-col p-6 overflow-auto">
-                <Navbar/>
+                <Navbar />
                 <h1 className="text-2xl mt-10 font-bold mb-2">Update Profile</h1>
-                <div className="grid mt-2 w-full lg:grid-cols-12 gap-x-6">
+
+                <div className="flex justify-between px-6 mt-2 w-full">
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
                         {/* Input fields for user data */}
                         <InputField
@@ -150,7 +175,6 @@ function UpdateUser() {
                             value={userData.language_w}
                             onChange={handleChange} // Handle input change
                         />
-
                         <InputField
                             label="Transportation Mode"
                             placeholder="Enter Transportation Mode"
@@ -158,21 +182,40 @@ function UpdateUser() {
                             value={userData.transportation_mode}
                             onChange={handleChange} // Handle input change
                         />
-                        {/* Submit button */}
-                        <div className="flex justify-center gap-4 pb-4">
-                            <button
-                                onClick={handleSubmit}
-                                className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
-                            >
-                                Update
-                            </button>
+                        {/* Submit buttons */}
+                        <div className="flex justify-center items-center gap-4">
                             <button
                                 onClick={handleChangePassword}
                                 className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
                             >
                                 Change Password
                             </button>
+                            <button
+                                onClick={handleSubmit}
+                                className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
+                            >
+                                Save
+                            </button>
                         </div>
+                    </div>
+
+                    <div className="flex flex-col items-center mb-6">
+                        <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200">
+                            {/* Show selected image if exists, otherwise API image */}
+                            <img
+                                src={selectedImage ? URL.createObjectURL(selectedImage) : (userData.image ? `${API}/media/${userData.image}` : UserPfp)}
+                                alt="Profile"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+
+                        {/* File input for image upload */}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange} // Handle file selection
+                            className="mt-2"
+                        />
                     </div>
                 </div>
             </div>

@@ -33,6 +33,8 @@ import SlotsData from '../pages/Slots/SlotsData';
 import ModifySlot from '../pages/Slots/ModifySlot';
 import SignUp from '../pages/signUp/SignUp';
 import SpecificEvent from '../pages/eventManagement/SpecificEvent';
+import UpdateTimeRequest from '../pages/eventManagement/UpdateTimeRequest';
+import UpdateRequests from '../pages/eventManagement/UpdateRequests';
 
 const AppRoutes = () => {
   return (
@@ -56,6 +58,8 @@ const AppRoutes = () => {
 
 
         <Route path="/agency-user" element={<AgencyUser />} />
+        <Route path="/update-requests" element={<UpdateRequests />} />
+        <Route path="/update-time-request/:id" element={<UpdateTimeRequest />} />
         <Route path="/slots-data" element={<SlotsData />} />
         <Route path="/create-slots" element={<CreateSlots />} />
         <Route path="/create-event/:id" element={<CreateEvent />} />

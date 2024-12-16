@@ -72,12 +72,19 @@ export const Navbar = (props) => {
               {/* <UserIcon className="w-5 h-5 text-gray-600" /> */}
               <div>
                 <button onClick={handleUpdate}>
-                  <img className='w-[35px] h-[45px]' style={{ borderBottomLeftRadius: '100px', borderBottomRightRadius: "100px" }} src={UserPfp} />
+                  <img
+                    className='w-[35px] h-[45px]'
+                    style={{ borderBottomLeftRadius: '100px', borderBottomRightRadius: "100px" }}
+                    src={userData && userData.image ? `${API}/media/${userData.image}` : UserPfp}
+                    alt="Profile"
+                  />
+
+
                 </button>
               </div>
               {/* <ProfileImageClip imageUrl={UserPfp}/> */}
               {/* </div> */}
-              
+
               <span onClick={handleUpdate} className="text-sm font-medium cursor-pointer" style={{ lineHeight: '15px' }}>{userData?.first_name}<br></br>{userData?.last_name}</span>
               {/* <span className="text-sm font-medium" style={{ lineHeight: '15px' }}>
                 <button onClick={handleUpdate}></button>

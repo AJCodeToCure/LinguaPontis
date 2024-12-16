@@ -201,7 +201,7 @@ const EventManagementPage = () => {
                   <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Location</th>
                   <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Start Time</th>
                   <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">End Time</th>
-                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Attendees</th>
+                  <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Contact</th>
                   <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]">Status</th>
                   <th className="py-2 px-3 text-left text-[12px] font-[Montserrat] text-[var(--blueColor)]"></th>
                 </tr>
@@ -221,7 +221,8 @@ const EventManagementPage = () => {
                     <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.address || event.city || event.country || 'N/A'}</td>
                     <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.date_begin ? new Date(event.date_begin).toLocaleString() : 'N/A'}</td>
                     <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.date_ending ? new Date(event.date_ending).toLocaleString() : 'N/A'}</td>
-                    <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">
+                    <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.phone || 'N/A'}</td>
+                    {/* <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">
                       {event.mediators && event.mediators.length > 0
                         ? event.mediators.map((mediator) => (
                           <div key={mediator.id}>
@@ -229,7 +230,7 @@ const EventManagementPage = () => {
                           </div>
                         ))
                         : 'No Mediators'}
-                    </td>
+                    </td> */}
                     <td className="py-2 px-3">
                       <span className={`flex px-2 py-1 rounded-full text-xs ${event.is_confirmed ? 'bg-green-200 font-bold text-green-900' : 'font-bold bg-[#F2F4F7] text-[#364254]'}`}>
                         <span className='mr-2 mt-[5px] pl-1'>
