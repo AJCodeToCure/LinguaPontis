@@ -437,7 +437,7 @@ const CreateTeam = () => {
                     },
                 }
             );
-            navigate('/agencies')
+            navigate('/team-details')
             Swal.fire({
                 title: "Team Created Sucessfully!",
                 icon: "success"

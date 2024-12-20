@@ -21,7 +21,7 @@ function UpdateUser() {
         first_name: '',
         last_name: '',
         contact: '',
-        address: '',
+        location: '',
         language_s: '',
         language_w: '',
         transportation_mode: '',
@@ -81,7 +81,7 @@ function UpdateUser() {
         formData.append('first_name', userData.first_name);
         formData.append('last_name', userData.last_name);
         formData.append('contact', userData.contact);
-        formData.append('address', userData.address);
+        formData.append('location', userData.location);
         formData.append('language_s', userData.language_s);
         formData.append('language_w', userData.language_w);
         formData.append('transportation_mode', userData.transportation_mode);
@@ -155,10 +155,10 @@ function UpdateUser() {
                             onChange={handleChange} // Handle input change
                         />
                         <InputField
-                            label="Address"
-                            placeholder="Enter address"
-                            name="address"
-                            value={userData.address}
+                            label="Location"
+                            placeholder="Enter location"
+                            name="location"
+                            value={userData.location}
                             onChange={handleChange} // Handle input change
                         />
                         <InputField

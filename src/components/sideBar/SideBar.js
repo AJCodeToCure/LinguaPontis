@@ -147,13 +147,27 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
         }
       ]
       : []),
- 
+    ...(userGroup === 'team_manager'
+      ? [
       {
         icon: <EventManagementIcons className="w-6 h-6" />,
-        label: 'Time Requests',
+        label: 'Time Changed Requests',
         link: '/update-requests',
-        action: () => navigate('/update-requests') 
-      },
+        action: () => navigate('/update-requests')
+      }
+    ]
+    : [])
+      ,
+    ...(userGroup === 'mediator'
+      ? [
+      {
+        icon: <EventManagementIcons className="w-6 h-6" />,
+        label: 'Time Changed List',
+        link: '/mediator-update-requests',
+        action: () => navigate('/mediator-update-requests')
+      }
+    ]
+    : []),
     // {
     //   icon: <CreatAgencyIcons className="w-6 h-6" />,
     //   label: 'Create Agency',

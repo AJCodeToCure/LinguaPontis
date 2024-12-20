@@ -808,109 +808,98 @@ const FeedbackCard = () => {
             <div className="p-4">
                 <div>
                     {feedbackData && feedbackData.length > 0 ? (
-                        feedbackData.map((feedback) => (
-                            <div key={feedback.id} className="max-w-sm mx-auto bg-white mb-2 shadow-lg rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-semibold text-gray-800">
-                                        {feedback.created_by_role === "event_manager" ? "Manager" : "Mediator"} {feedback.mediator_name} - Feedback
-                                    </h3>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-                                        <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Zm3.094 8.016a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div className="mt-4">
-                                    <p className="font-medium text-gray-700">Beneficiary Comprehension</p>
-                                    <div className="flex space-x-1">
-                                        {renderStars(feedback.beneficiary_comprehension)}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Adjusted gap for better spacing */}
+                            {feedbackData.map((feedback) => (
+                                <div key={feedback.id} className="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-semibold text-gray-800">
+                                            {feedback.created_by_role === "event_manager" ? "Manager" : "Mediator"} - Feedback
+                                        </h3>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-red-500">
+                                            <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Zm3.094 8.016a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                        </svg>
                                     </div>
-                                </div>
 
-                                {/* Conditionally rendering fields based on role */}
-                                {feedback.created_by_role === 'mediator' ? (
-                                    <>
-                                        <div className="mt-4">
-                                            <p className="font-medium text-gray-700">Meeting Result</p>
-                                            <div className="flex space-x-1">
-                                                {renderStars(feedback.meeting_result)}
-                                            </div>
-                                        </div>
-                                        <div className="mt-4">
-                                            <p className="font-medium text-gray-700">Team Experience</p>
-                                            <div className="flex space-x-1">
-                                                {renderStars(feedback.team_experience)}
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="mt-4">
-                                            <p className="font-medium text-gray-700">Meeting Objective</p>
-                                            <div className="flex space-x-1">
-                                                {renderStars(feedback.meeting_objective)}
-                                            </div>
-                                        </div>
-                                        <div className="mt-4">
-                                            <p className="font-medium text-gray-700">Mediator Experience</p>
-                                            <div className="flex space-x-1">
-                                                {renderStars(feedback.mediator_experience)}
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {/* Optional: Additional feedback notes */}
-                                {feedback.note && (
+                                    {/* Beneficiary Comprehension Section */}
                                     <div className="mt-4">
-                                        <p className="font-medium text-gray-700">Note</p>
-                                        <p className="text-gray-600">{feedback.note}</p>
-                                    </div>
-                                )}
-
-                                {/* Displaying images if available */}
-                                {feedback.images && feedback.images.length > 0 && (
-                                    <div className="mt-4">
-                                        <p className="font-medium text-gray-700">Images</p>
-                                        <div className="flex space-x-2">
-                                            {feedback.images.map((image, index) => {
-                                                // Get full image URL
-                                                const imageUrl = getFullImageUrl(image);
-                                                return (
-                                                    <img
-                                                        key={index}
-                                                        src={imageUrl}
-                                                        alt={`Feedback Image ${index + 1}`}
-                                                        className="w-16 h-16 object-cover rounded-lg shadow-md cursor-pointer"
-                                                        onClick={() => openModal(imageUrl)} // Open the modal on click
-                                                    />
-                                                );
-                                            })}
+                                        <p className="font-medium text-gray-700 text-sm">Beneficiary Comprehension</p>
+                                        <div className="flex space-x-1">
+                                            {renderStars(feedback.beneficiary_comprehension)}
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Modal for showing large image */}
-                                {modalImage && (
-                                    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-                                        <div className="bg-white p-4 rounded-lg relative max-w-full max-h-full">
-                                            <button
-                                                onClick={closeModal}
-                                                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full"
-                                            >
-                                                X
-                                            </button>
-                                            <img src={modalImage} alt="Large Feedback Image" className="max-w-full max-h-screen" />
+                                    {/* Conditionally rendering fields based on role */}
+                                    {feedback.created_by_role === 'mediator' ? (
+                                        <>
+                                            <div className="mt-4">
+                                                <p className="font-medium text-gray-700 text-sm">Meeting Result</p>
+                                                <div className="flex space-x-1">
+                                                    {renderStars(feedback.meeting_result)}
+                                                </div>
+                                            </div>
+                                            <div className="mt-4">
+                                                <p className="font-medium text-gray-700 text-sm">Team Experience</p>
+                                                <div className="flex space-x-1">
+                                                    {renderStars(feedback.team_experience)}
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="mt-4">
+                                                <p className="font-medium text-gray-700 text-sm">Meeting Objective</p>
+                                                <div className="flex space-x-1">
+                                                    {renderStars(feedback.meeting_objective)}
+                                                </div>
+                                            </div>
+                                            <div className="mt-4">
+                                                <p className="font-medium text-gray-700 text-sm">Mediator Experience</p>
+                                                <div className="flex space-x-1">
+                                                    {renderStars(feedback.mediator_experience)}
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {/* Optional: Additional feedback notes */}
+                                    {feedback.note && (
+                                        <div className="mt-4">
+                                            <p className="font-medium text-gray-700 text-sm">Note</p>
+                                            <p className="text-gray-600 text-sm">{feedback.note}</p>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-                        ))
+                                    )}
+
+                                    {/* Displaying images if available */}
+                                    {feedback.images && feedback.images.length > 0 && (
+                                        <div className="mt-4">
+                                            <p className="font-medium text-gray-700 text-sm">Images</p>
+                                            <div className="flex space-x-2">
+                                                {feedback.images.map((image, index) => {
+                                                    // Get full image URL
+                                                    const imageUrl = getFullImageUrl(image);
+                                                    return (
+                                                        <img
+                                                            key={index}
+                                                            src={imageUrl}
+                                                            alt={`Feedback Image ${index + 1}`}
+                                                            className="w-16 h-16 object-cover rounded-lg shadow-md cursor-pointer hover:scale-105 transition-transform"
+                                                            onClick={() => openModal(imageUrl)} // Open the modal on click
+                                                        />
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     ) : (
                         <div className="text-center p-4 text-gray-500">No feedback available.</div>
                     )}
-
                 </div>
             </div>
         </div>
+
     );
 };
 
@@ -1015,8 +1004,16 @@ const SpecificEvent = () => {
                         <div className="mb-1 p-4 flex justify-between items-center">
                             <h1 className="text-2xl font-bold font-[Nunito]">Event Details</h1>
                             <div className="flex justify-end px-6 space-x-2">
-                                <button onClick={() => navigate(`/update-time-request/${id}`)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Time Request</button>
-                                <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Date</button>
+                                {role === 'mediator' ? 
+                                (
+                                    <button onClick={() => navigate(`/update-time-request/${id}`)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Time Request</button>
+                                ) : 
+                                (
+                                    <p></p>
+                                )
+                                }
+                                {role === "team_manager" ?
+                                (<button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Date</button>) : (<p></p>) }
                                 <DateUpdateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} events={events} />
                                 {role === 'super_user' ? (
                                     // Show both buttons if the role is 'super_user'
@@ -1115,6 +1112,38 @@ const SpecificEvent = () => {
                                                             </div>
                                                         )}
 
+                                                        <div className='mb-4'>
+                                                            <div className="bg-white p-6 rounded-lg shadow-lg">
+                                                                <h2 className="text-2xl font-bold text-gray-800 mb-6">Time Change Requests</h2>
+                                                                <div className="space-y-4">
+                                                                    {event.time_change_request.map((request) => (
+                                                                        <div
+                                                                            key={request.id}
+                                                                            className={`bg-white p-4 rounded-lg shadow-md border-2 ${request.is_confirm ? "border-green-500" : "border-red-500"
+                                                                                }`}
+                                                                        >
+                                                                            <div className="flex items-center justify-between">
+                                                                                <h3 className="text-xl font-semibold text-gray-800">{request.event_name}</h3>
+                                                                                <div className="flex items-center">
+                                                                                    <span
+                                                                                        className={`text-sm ${request.is_confirm ? "text-green-500" : "text-red-500"
+                                                                                            } font-semibold`}
+                                                                                    >
+                                                                                        {request.is_confirm ? "Confirmed" : "Pending"}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="mt-2 text-gray-600">
+                                                                                <p>Requested by: <span className="font-semibold">{request.request_by}</span></p>
+                                                                                <p>Reason: <span className="font-semibold">{request.reason}</span></p>
+                                                                                <p>Note: <span className="font-semibold">{request.note}</span></p>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                         <table className="min-w-full bg-white">
                                                             <thead className='bg-[var(--cardTeamBg)]'>
                                                                 <tr className="">
@@ -1161,9 +1190,9 @@ const SpecificEvent = () => {
                                                                         <ul className='font-serif w-full'>
                                                                             {team.mediators && team.mediators.map((mediator, index) => {
                                                                                 let circleColor = 'gray';
-                                                                                if (mediator.is_confirm === true) {
+                                                                                if (mediator.is_confirm === true || mediator.is_confirm === 1) {
                                                                                     circleColor = 'green';
-                                                                                } else if (mediator.is_confirm === false) {
+                                                                                } else if (mediator.is_confirm === false || mediator.is_confirm === 0) {
                                                                                     circleColor = 'red';
                                                                                 }
 
@@ -1187,9 +1216,9 @@ const SpecificEvent = () => {
                                                                         <ul className='font-serif w-full'>
                                                                             {team.beneficiaries && team.beneficiaries.map((mediator, index) => {
                                                                                 let circleColor = 'gray';
-                                                                                if (mediator.is_confirm === true) {
+                                                                                if (mediator.is_confirm === true || mediator.is_confirm === 1) {
                                                                                     circleColor = 'green';
-                                                                                } else if (mediator.is_confirm === false) {
+                                                                                } else if (mediator.is_confirm === false || mediator.is_confirm === 0) {
                                                                                     circleColor = 'red';
                                                                                 }
 
@@ -1204,6 +1233,47 @@ const SpecificEvent = () => {
                                                                                 );
                                                                             })}
                                                                         </ul>
+                                                                    </div>
+                                                                </div>
+                                                                <div className='flex gap-24 border-2 p-4'>
+                                                                    <div className='font-bold w-28'>Managers:</div>
+                                                                    <div>
+                                                                        <ul className='font-serif w-full'>
+                                                                            {team.other_managers && team.other_managers.map((mediator, index) => {
+                                                                                let circleColor = 'gray';
+                                                                                let confirmcircleColor = 'gray';
+                                                                                if (mediator.is_confirm === true || mediator.is_confirm === 1) {
+                                                                                    confirmcircleColor = 'green';
+                                                                                } else if (mediator.is_confirm === false || mediator.is_confirm === 0)
+                                                                                {
+                                                                                    confirmcircleColor = 'red';
+                                                                                }
+
+                                                                                if (mediator.presence === true || mediator.presence === 1) {
+                                                                                    circleColor = 'blue';
+                                                                                } else {
+                                                                                    
+                                                                                }
+
+                                                                                
+
+
+                                                                                return (
+                                                                                    <li key={mediator.id} className="flex justify-between w-full items-center">
+                                                                                        <span className='w-44'>{index + 1}. {mediator.manager_username}</span>
+                                                                                        <span
+                                                                                            className={`h-3.5 w-3.5 rounded-full ${confirmcircleColor === 'green' ? 'bg-green-500' : confirmcircleColor === 'red' ? 'bg-red-500' : 'bg-gray-400'}`}
+                                                                                        />
+
+                                                                                        <span
+                                                                                            className={`h-3.5 w-3.5 rounded-full ${circleColor === 'blue' ? 'bg-blue-500' : circleColor === 'red' ? '' : ''}`}
+                                                                                        />
+                                                                                        
+                                                                                    </li>
+                                                                                );
+                                                                            })}
+                                                                        </ul>
+                                                                   
                                                                     </div>
                                                                 </div>
 

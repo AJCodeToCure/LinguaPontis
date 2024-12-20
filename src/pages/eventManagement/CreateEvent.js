@@ -385,12 +385,17 @@ function CreateEvent() {
     const [selectedUserId, setSelectedUserId] = useState('');
     const [selectedMediatorId, setSelectedMediatorId] = useState([]);
     const [selectedBeneficiaryId, setSelectedBeneficiaryId] = useState("");
+    const [selectedManagerId, setSelectedManagerId] = useState("");
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("");
+    const [isToggled, setIsToggled] = useState(false);
+
     const [agencyData, setAgencyData] = useState({
         team: id,
         mediators: [],
         beneficires: [],
+        other_managers: [],
+        presence: isToggled,
         name: '',
         surname: '',
         address: '',
@@ -408,7 +413,20 @@ function CreateEvent() {
         date_ending: '',
     });
     const [members, setMembers] = useState([]);
+    const [mems, setMems] = useState([]);
     const [slotsData, setSlotsData] = useState(null);
+    const [bsData, setBsData] = useState(null);
+
+    const handleToggleChange = () => {
+        const newValue = !isToggled;
+        setIsToggled(newValue); // Update isToggled state
+
+        // Update agencyData with the new value for presence
+        setAgencyData(prevData => ({
+            ...prevData,
+            presence: newValue // Set presence to the new value of isToggled
+        }));
+    };
 
     useEffect(() => {
         const fetchMediators = async () => {
@@ -418,6 +436,8 @@ function CreateEvent() {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
+                console.log("Team Members")
+                console.log(response.data)
                 setMembers(response.data);
             } catch (error) {
                 console.error('Error getting team:', error);
@@ -428,7 +448,30 @@ function CreateEvent() {
             }
         };
 
+
+
+
+        const fetchOtherTeamMembers = async () => {
+            try {
+                const response = await axios.get(`${API}/api/get_other_team_manager/?team_id=${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                console.log("Team Members")
+                console.log(response.data)
+                setMems(response.data);
+            } catch (error) {
+                console.error('Error getting team:', error);
+
+                // Extract and show error message from the response
+                const errorMessage = error.response?.data?.detail || 'Failed to getting the other teams member.';
+                alert(errorMessage);
+            }
+        };
+
         fetchMediators();
+        fetchOtherTeamMembers();
     }, [token]);
 
     const handleCountrySelect = (e) => {
@@ -471,7 +514,7 @@ function CreateEvent() {
                     },
                 }
             );
-            navigate('/agencies')
+            navigate('/team-details')
             Swal.fire({
                 title: "Event Created Sucessfully!",
                 icon: "success"
@@ -519,6 +562,13 @@ function CreateEvent() {
         }))
     ).flat();
 
+    const managerOptions = mems
+        .map((member) => ({
+            label: member.manager_name,  // Display the manager name
+            value: member.manager_id,   // Use the manager's id as the value
+        })); // Flatten the final array to a single array of manager options
+
+
     const handleMediatorSelect = async (e) => {
         const selectedId = Array.from(e.target.selectedOptions, (option) => option.value);
         console.log(selectedId);
@@ -555,6 +605,34 @@ function CreateEvent() {
         setAgencyData((prevData) => ({
             ...prevData,
             beneficires: selectedId,
+        }));
+        try {
+            const selectedIdsString = selectedId.join(',');
+            const response = await axios.get(
+                `${API}/api/get_beneficiary_function_location/?beneficiary_id=${encodeURIComponent(selectedIdsString)}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+            );
+            // Assuming the response contains available slots
+            setBsData(response.data); // Store the slots in state (or handle as needed)
+            console.log('Beneficiaries Data:', response.data); // Check what data is returned
+        } catch (error) {
+            console.error('Error fetching beneficiary details:', error);
+        }
+    };
+
+    const handleManagerSelect = async (e) => {
+        // const selectedId = e.target.value;
+        const selectedId = Array.from(e.target.selectedOptions, (option) => option.value);
+        setSelectedManagerId(selectedId); // Update the selected mediator ID
+
+        // Update the team data with the selected mediator ID
+        setAgencyData((prevData) => ({
+            ...prevData,
+            other_managers: selectedId,
         }));
 
         // Now make the API call with the selected mediator ID
@@ -615,6 +693,23 @@ function CreateEvent() {
                                 name="beneficiary"
                             />
                             <InputField label="Postal Code" placeholder="Enter postal code" name="postal_code" value={agencyData.postal_code} onChange={(e) => handleChange(e, 'postal_code')} />
+                            <MultiDropdownSelect
+                                label="Other Team's Manager *"
+                                options={managerOptions}
+                                value={selectedManagerId}
+                                onChange={handleManagerSelect}
+                                name="beneficiary"
+                            />
+                            <div className="flex items-center">
+                                <label htmlFor="toggle" className="mr-2 text-gray-700">Presence:</label>
+                                <input
+                                    type="checkbox"
+                                    id="toggle"
+                                    checked={isToggled}
+                                    onChange={handleToggleChange}
+                                    className="w-10 h-5 bg-gray-300 rounded-full cursor-pointer focus:outline-none transition duration-200 ease-in-out"
+                                />
+                            </div>
                             <InputField label="Address" placeholder="Enter address" name="address" value={agencyData.address} onChange={(e) => handleChange(e, 'address')} />
                             <InputField label="City" placeholder="Enter city" name="city" value={agencyData.city} onChange={(e) => handleChange(e, 'city')} />
                             <InputField label="task" placeholder="Enter task" name="task" value={agencyData.task} onChange={(e) => handleChange(e, 'task')} />
@@ -685,6 +780,39 @@ function CreateEvent() {
                                 </table>
                             </div>
                         )}
+                        {bsData && (
+                            <div className="bg-[var(--cardTeamBg)] shadow-lg rounded-lg p-6">
+                                <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Beneficiaries Data</h3>
+                                <table className="min-w-full bg-white table-auto">
+                                    <thead>
+                                        <tr className="border-b">
+                                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Username</th>
+                                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Location</th>
+                                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Functions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bsData.map((slot) => (
+                                            <tr
+                                                key={slot.id}
+                                                className="hover:bg-gray-50 border-b transition duration-300 ease-in-out"
+                                            >
+                                                <td className="px-4 py-3 text-sm text-gray-600">{slot.username}</td>
+                                                <td className="px-4 py-3 text-sm text-gray-600">{slot.location}</td>
+                                                <td className="px-4 py-3 text-sm text-gray-600 break-words whitespace-normal max-w-xs">{slot.functions}</td>
+                                                </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+
+
+
+
+                    <div className="overflow-x-auto py-10">
+                        
                     </div>
 
 
