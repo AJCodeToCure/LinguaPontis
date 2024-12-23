@@ -253,6 +253,11 @@ const countries = [
     "Zambia",
     "Zimbabwe"
 ];
+
+const modes = [
+    "OnSite",
+    "Online"
+];
 const languages = [
     "Afrikaans",
     "Albanian",
@@ -368,6 +373,10 @@ const countryOptions = countries.map(country => ({
     value: country,  // Value is the country name
     label: country,  // Label is also the country name
 }));
+const modeOptions = modes.map(country => ({
+    value: country,  // Value is the country name
+    label: country,  // Label is also the country name
+}));
 const languageOptions = countries.map(language => ({
     value: language,  // Value is the country name
     label: language,  // Label is also the country name
@@ -387,6 +396,7 @@ function CreateEvent() {
     const [selectedBeneficiaryId, setSelectedBeneficiaryId] = useState("");
     const [selectedManagerId, setSelectedManagerId] = useState("");
     const [selectedCountry, setSelectedCountry] = useState("");
+    const [selectedMode, setSelectedMode] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("");
     const [isToggled, setIsToggled] = useState(false);
 
@@ -405,12 +415,17 @@ function CreateEvent() {
         email: '',
         phone: '',
         task: '',
+        location: '',
         created_by: '',
         manager: '',
         npo: '',
         event_manager: '',
         date_begin: '',
         date_ending: '',
+        meeting_objective: '',
+        meeting_object: '',
+        status: '',
+        mode: ''
     });
     const [members, setMembers] = useState([]);
     const [mems, setMems] = useState([]);
@@ -496,6 +511,14 @@ function CreateEvent() {
         setAgencyData((prevData) => ({
             ...prevData,
             country: value, // Update the country in the state
+        }));
+    };
+    const handleModeSelect = (e) => {
+        const { value } = e.target;  // Get the selected country's name from the event
+        setSelectedMode(value);
+        setAgencyData((prevData) => ({
+            ...prevData,
+            mode: value, // Update the country in the state
         }));
     };
     const handleLanguageSelect = (e) => {
@@ -663,6 +686,7 @@ function CreateEvent() {
                     <div className="grid mt-16 w-full lg:grid-cols-10">
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:col-span-8 gap-x-6 gap-y-2">
+                        <InputField label="Meeting Objective" placeholder="Enter meeting objective" type="meeting_objective" name="meeting_objective" value={agencyData.meeting_objective} onChange={(e) => handleChange(e, 'meeting_objective')} />
                             <InputField
                                 label="Event Name *"
                                 placeholder="Enter event name"
@@ -696,6 +720,8 @@ function CreateEvent() {
                                 onChange={handleManagerSelect}
                                 name="beneficiary"
                             />
+                            <InputField label="Meeting Object" placeholder="Enter meeting object" type="meeting_object" name="meeting_object" value={agencyData.meeting_object} onChange={(e) => handleChange(e, 'meeting_object')} />
+
                             <div className='border-2 mt-6 p-2'>
                                 {agencyData.other_managers.map((manager) => {
                                     const managerName = managerOptions.find(option => option.value === manager.id)?.label;
@@ -723,6 +749,8 @@ function CreateEvent() {
                             <InputField label="Address" placeholder="Enter address" name="address" value={agencyData.address} onChange={(e) => handleChange(e, 'address')} />
                             <InputField label="City" placeholder="Enter city" name="city" value={agencyData.city} onChange={(e) => handleChange(e, 'city')} />
                             <InputField label="task" placeholder="Enter task" name="task" value={agencyData.task} onChange={(e) => handleChange(e, 'task')} />
+                            <InputField label="location" placeholder="Enter location" name="location" value={agencyData.location} onChange={(e) => handleChange(e, 'location')} />
+
                             <DropdownSelect
                                 label="Select Country"
                                 options={countryOptions}
@@ -746,6 +774,15 @@ function CreateEvent() {
                                 onChange={(e) => handleChange(e, 'date_ending')}
                                 type="datetime-local"
                             />
+                            <DropdownSelect
+                                label="Select Mode"
+                                options={modeOptions}
+                                value={selectedMode}
+                                onChange={handleModeSelect}
+                                name="mode"
+                            />
+                            <InputField label="status" placeholder="Enter status" name="status" value={agencyData.status} onChange={(e) => handleChange(e, 'status')} />
+
                             <div className="flex justify-center gap-4 pb-4">
                                 <button onClick={handleSubmit} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">
                                     Create
