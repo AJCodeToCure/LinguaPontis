@@ -985,10 +985,10 @@ const SpecificEvent = () => {
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
             <div className="w-full pl-20 flex-1 flex flex-col p- overflow-auto">
                 <Navbar />
-                <div className="w-full flex flex-col items-center mt-10 mb-10">
+                {/* <div className="w-full flex flex-col items-center mt-10 mb-10">
 
                     <div className="flex justify-between w-1/2 max-sm:w-full text-gray-500">
-                        {/* Buttons */}
+                       
                         <button className="focus:outline-none font-[Mada] text-[16px]">Past Month</button>
                         <button className="focus:outline-none font-[Mada] text-[16px]">Past Week</button>
                         <button className="focus:outline-none font-[Mada] text-[16px]">Today</button>
@@ -996,24 +996,24 @@ const SpecificEvent = () => {
                         <button className="focus:outline-none font-[Mada] text-[16px]">Month</button>
                         <button className="focus:outline-none font-[Mada] text-[16px]">Past Month</button>
                     </div>
-                    {/* Horizontal line */}
+                   
                     <div className="w-1/2 max-sm:w-full border-b-2 border-gray-200 mt-2"></div>
-                </div>
+                </div> */}
                 <div>
                     <div className='border rounded-lg px-3'>
                         <div className="mb-1 p-4 flex justify-between items-center">
                             <h1 className="text-2xl font-bold font-[Nunito]">Event Details</h1>
                             <div className="flex justify-end px-6 space-x-2">
-                                {role === 'mediator' ? 
-                                (
-                                    <button onClick={() => navigate(`/update-time-request/${id}`)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Time Request</button>
-                                ) : 
-                                (
-                                    <p></p>
-                                )
+                                {role === 'mediator' ?
+                                    (
+                                        <button onClick={() => navigate(`/update-time-request/${id}`)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Time Request</button>
+                                    ) :
+                                    (
+                                        <p></p>
+                                    )
                                 }
                                 {role === "team_manager" ?
-                                (<button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Date</button>) : (<p></p>) }
+                                    (<button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800">Update Date</button>) : (<p></p>)}
                                 <DateUpdateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} events={events} />
                                 {role === 'super_user' ? (
                                     // Show both buttons if the role is 'super_user'
@@ -1244,18 +1244,17 @@ const SpecificEvent = () => {
                                                                                 let confirmcircleColor = 'gray';
                                                                                 if (mediator.is_confirm === true || mediator.is_confirm === 1) {
                                                                                     confirmcircleColor = 'green';
-                                                                                } else if (mediator.is_confirm === false || mediator.is_confirm === 0)
-                                                                                {
+                                                                                } else if (mediator.is_confirm === false || mediator.is_confirm === 0) {
                                                                                     confirmcircleColor = 'red';
                                                                                 }
 
                                                                                 if (mediator.presence === true || mediator.presence === 1) {
                                                                                     circleColor = 'blue';
                                                                                 } else {
-                                                                                    
+
                                                                                 }
 
-                                                                                
+
 
 
                                                                                 return (
@@ -1268,12 +1267,12 @@ const SpecificEvent = () => {
                                                                                         <span
                                                                                             className={`h-3.5 w-3.5 rounded-full ${circleColor === 'blue' ? 'bg-blue-500' : circleColor === 'red' ? '' : ''}`}
                                                                                         />
-                                                                                        
+
                                                                                     </li>
                                                                                 );
                                                                             })}
                                                                         </ul>
-                                                                   
+
                                                                     </div>
                                                                 </div>
 

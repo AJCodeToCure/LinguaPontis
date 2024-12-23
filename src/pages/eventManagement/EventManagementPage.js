@@ -16,6 +16,7 @@ import axios from 'axios';
 import { API_Base } from '../../components/api/config';
 import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../../components/navBar/NavBar';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 
 
 const Modal = ({ isOpen, onClose, onDelete }) => {
@@ -55,6 +56,12 @@ const EventManagementPage = () => {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // Pagination items per page
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+
   const fetchEvents = async () => {
     try {
       const response = await axios.get(`${API}/api/event/?team_id=${id}`, {
@@ -63,6 +70,7 @@ const EventManagementPage = () => {
         },
       });
       setEvents(response.data);
+      setFilteredEvents(response.data);
     } catch (error) {
       console.error('Error getting team:', error);
 
@@ -74,6 +82,36 @@ const EventManagementPage = () => {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to page 1 when search changes
+  };
+
+  const filterEventsByDate = (events, dateType) => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    let filtered = events;
+
+    if (dateType === 'past') {
+      filtered = events.filter(event => new Date(event.date_begin) < startOfMonth);
+    } else if (dateType === 'this') {
+      filtered = events.filter(event => new Date(event.date_begin) >= startOfMonth && new Date(event.date_begin) <= endOfMonth);
+    } else if (dateType === 'next') {
+      filtered = events.filter(event => new Date(event.date_begin) > endOfMonth);
+    }
+
+    return filtered;
+  };
+
+  // Apply Date Filter
+  const handleDateFilter = (type) => {
+    setDateFilter(type);
+    const filtered = filterEventsByDate(events, type);
+    setFilteredEvents(filtered); // Update filtered events
+    setCurrentPage(1); // Reset to page 1 when date filter is changed
+  };
 
   const handleDelete = async (eventId) => {
     try {
@@ -133,11 +171,34 @@ const EventManagementPage = () => {
     );
   };
 
+  const filterBySearch = (events) => {
+    return events.filter(event => {
+      return (
+        event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.country.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+  };
+
+  const getFilteredEvents = () => {
+    let filtered = filterBySearch(filteredEvents);
+    return filtered;
+  };
+
+  // Paginate the filtered events
+  const indexOfLastEvent = currentPage * itemsPerPage;
+  const indexOfFirstEvent = indexOfLastEvent - itemsPerPage;
+  const currentEvents = getFilteredEvents().slice(indexOfFirstEvent, indexOfLastEvent);
+
   const isAllSelected = selectedEvents.length === eventData.length;
 
   const toggleAllSelection = () => {
     setSelectedEvents(isAllSelected ? [] : eventData.map(event => event.id));
   };
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
 
@@ -149,15 +210,26 @@ const EventManagementPage = () => {
         <div className="w-full flex flex-col items-center mt-10 mb-10">
 
           <div className="flex justify-between w-1/2 max-sm:w-full text-gray-500">
-            {/* Buttons */}
-            <button className="focus:outline-none font-[Mada] text-[16px]">Past Month</button>
-            <button className="focus:outline-none font-[Mada] text-[16px]">Past Week</button>
-            <button className="focus:outline-none font-[Mada] text-[16px]">Today</button>
-            <button className="focus:outline-none font-[Mada] text-[16px]">Past Week</button>
-            <button className="focus:outline-none font-[Mada] text-[16px]">Month</button>
-            <button className="focus:outline-none font-[Mada] text-[16px]">Past Month</button>
+            <button
+              className="focus:outline-none font-[Mada] text-[16px]"
+              onClick={() => handleDateFilter('past')}
+            >
+              Past Months
+            </button>
+            <button
+              className="focus:outline-none font-[Mada] text-[16px]"
+              onClick={() => handleDateFilter('this')}
+            >
+              This Month
+            </button>
+            <button
+              className="focus:outline-none font-[Mada] text-[16px]"
+              onClick={() => handleDateFilter('next')}
+            >
+              Next Months
+            </button>
           </div>
-          {/* Horizontal line */}
+
           <div className="w-1/2 max-sm:w-full border-b-2 border-gray-200 mt-2"></div>
         </div>
 
@@ -207,37 +279,20 @@ const EventManagementPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {events.map((event) => (
+                {currentEvents.map((event) => (
                   <tr key={event.id} className="border-b">
-                    {/* <td className="py-2 px-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedEvents.includes(event.id)}
-                        onChange={() => toggleEventSelection(event.id)}
-                        className="form-checkbox"
-                      />
-                    </td> */}
                     <td onClick={() => navigate(`/specific-event/${event.id}`)} className="py-2 px-3 cursor-pointer font-bold font-inter text-[14px] text-[var(--lightTextGray)]">{event.name || 'N/A'}</td>
                     <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.address || event.city || event.country || 'N/A'}</td>
                     <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.date_begin ? new Date(event.date_begin).toLocaleString() : 'N/A'}</td>
                     <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.date_ending ? new Date(event.date_ending).toLocaleString() : 'N/A'}</td>
                     <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">{event.phone || 'N/A'}</td>
-                    {/* <td className="py-2 px-3 text-[14px] text-[var(--lightTextGray)]">
-                      {event.mediators && event.mediators.length > 0
-                        ? event.mediators.map((mediator) => (
-                          <div key={mediator.id}>
-                            {mediator.mediator_username} ({mediator.mediator_email})
-                          </div>
-                        ))
-                        : 'No Mediators'}
-                    </td> */}
                     <td className="py-2 px-3">
                       <span
                         className={`px-2 py-1 rounded-full text-xs ${event.event_status === "confirm"
-                            ? "bg-green-200 font-bold text-green-900"
-                            : event.event_status === "revoke"
-                              ? "bg-red-200 font-bold text-red-900"
-                              : "font-bold bg-[#F2F4F7] text-[#364254]"
+                          ? "bg-green-200 font-bold text-green-900"
+                          : event.event_status === "revoke"
+                            ? "bg-red-200 font-bold text-red-900"
+                            : "font-bold bg-[#F2F4F7] text-[#364254]"
                           }`}
                       >
                         {event.event_status === "confirm"
@@ -268,6 +323,35 @@ const EventManagementPage = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <p className="text-sm font-[Poppins] text-gray-600">
+              Showing {indexOfFirstEvent + 1} to {Math.min(indexOfLastEvent, getFilteredEvents().length)} of{' '}
+              {getFilteredEvents().length} entries
+            </p>
+            <div className="flex">
+              <button
+                className="px-3 py-1 rounded-l-md border bg-white text-gray-600 hover:bg-gray-100"
+                onClick={() => paginate(Math.max(currentPage - 1, 1))}
+              >
+                <ChevronLeft size={20} />
+              </button>
+              {[...Array(Math.ceil(getFilteredEvents().length / itemsPerPage)).keys()].map((num) => (
+                <button
+                  key={num + 1}
+                  onClick={() => paginate(num + 1)}
+                  className={`px-3 ml-2 mr-2 rounded-[8px] py-1 border ${currentPage === num + 1 ? 'bg-[var(--darkBlue)] text-white' : 'bg-white text-gray-600'} hover:bg-blue-100`}
+                >
+                  {num + 1}
+                </button>
+              ))}
+              <button
+                className="px-3 py-1 rounded-r-md border bg-white text-gray-600 hover:bg-gray-100"
+                onClick={() => paginate(Math.min(currentPage + 1, Math.ceil(getFilteredEvents().length / itemsPerPage)))}
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -26,6 +26,7 @@ function UserManagement() {
     const [selectedAgencies, setSelectedAgencies] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [agenciesData, setAgenciesData] = useState([]); // State to store agencies data
+    const [searchQuery, setSearchQuery] = useState('');
     const token = sessionStorage.getItem("access_token");
     const [deactivatedAgencies, setDeactivatedAgencies] = useState([]);
     const API = API_Base;
@@ -67,6 +68,14 @@ function UserManagement() {
     useEffect(() => {
         fetchMembers();
     }, []);
+
+    const filteredAgencies = agenciesData.filter((agency) => {
+        const lowercasedQuery = searchQuery.toLowerCase();
+        return (
+            agency.username.toLowerCase().includes(lowercasedQuery) ||
+            (nameMapping[agency.group]?.toLowerCase().includes(lowercasedQuery) || agency.group.toLowerCase().includes(lowercasedQuery))
+        );
+    });
 
     const handleDeactivate = async (agencyId) => {
         try {
@@ -204,7 +213,7 @@ function UserManagement() {
     // Pagination Logic
     const indexOfLastAgency = currentPage * itemsPerPage;
     const indexOfFirstAgency = indexOfLastAgency - itemsPerPage;
-    const currentAgencies = agenciesData.slice(indexOfFirstAgency, indexOfLastAgency);
+    const currentAgencies = filteredAgencies.slice(indexOfFirstAgency, indexOfLastAgency);
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     return (
@@ -225,6 +234,8 @@ function UserManagement() {
                                         type="text"
                                         placeholder="Search"
                                         className="pl-10 pr-4 py-2 bg-[#F9FBFF] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
                                     />
                                     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                                         <MagnifyingIcons />
@@ -259,41 +270,12 @@ function UserManagement() {
                                         <th className="p-3"></th>
                                     </tr>
                                 </thead>
-                                {/* <tbody className="bg-white divide-y divide-gray-200">
-                                    {currentAgencies.map((agency) => (
-                                        <tr key={agency.id} className="hover:bg-gray-50 font-[Poppins] font-medium">
-                                            <td className="p-3">
-                                                <input
-                                                    type="checkbox"
-                                                    className="form-checkbox h-4 w-4 text-orange-600"
-                                                    checked={selectedAgencies.includes(agency.id)}
-                                                    onChange={() => toggleAgencySelection(agency.id)}
-                                                />
-                                            </td>
-                                            <td className="p-3">{agency.type}</td>
-                                            <td className="p-3">{agency.name}</td>
-                                            <td className="p-3">{agency.phone}</td>
-                                            <td className="p-3">{agency.email}</td>
-                                            <td className="p-3">{agency.country}</td>
-                                            <td className="p-3">
-                                                <span
-                                                    className={`px-4 py-1 rounded-[8px] text-xs ${agency.status === 'Online'
-                                                        ? 'bg-green-200 text-green-800 border border-green-800'
-                                                        : 'bg-red-200 text-red-800 border border-red-900'
-                                                        }`}
-                                                >
-                                                    {agency.status}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody> */}
+
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {agenciesData.map((agency) => (
+                                    {currentAgencies.map((agency) => (
                                         <tr
                                             key={agency.user_id}
-                                            className={`hover:bg-gray-50 font-[Poppins] font-medium ${agency.is_disable ? 'bg-yellow-100' : ''  // Highlight disabled rows
-                                                }`}
+                                            className={`hover:bg-gray-50 font-[Poppins] font-medium ${agency.is_disable ? 'bg-yellow-100' : ''}`}
                                         >
                                             <td className="p-3">
                                                 <input
@@ -301,11 +283,10 @@ function UserManagement() {
                                                     className="form-checkbox h-4 w-4 text-orange-600"
                                                 />
                                             </td>
-                                            <td className="p-3">{nameMapping[agency.group] || agency.group}</td>                                            <td className="p-3">{agency.username}</td>
+                                            <td className="p-3">{nameMapping[agency.group] || agency.group}</td>
+                                            <td className="p-3">{agency.username}</td>
                                             <td className="p-3">{agency.user_email}</td>
-                                            <td className="p-3">
-                                                N-A
-                                            </td>
+                                            <td className="p-3">N-A</td>
                                             <td className="p-3">
                                                 <span
                                                     className={`px-4 py-1 rounded-[8px] text-xs ${agency.is_hired
@@ -319,8 +300,8 @@ function UserManagement() {
                                             <td className="p-3">
                                                 <button
                                                     className={`px-4 py-1 rounded-[8px] text-xs ${agency.is_disable
-                                                        ? 'bg-green-200 text-green-800 border border-green-800'  // Activate button style
-                                                        : 'bg-yellow-200 text-yellow-800 border border-yellow-800'  // Disable button style
+                                                        ? 'bg-green-200 text-green-800 border border-green-800'
+                                                        : 'bg-yellow-200 text-yellow-800 border border-yellow-800'
                                                         }`}
                                                     onClick={() => agency.is_disable ? handleActivate(agency.user_id) : showDeactivationConfirmation(agency.user_id)}
                                                 >
@@ -335,9 +316,9 @@ function UserManagement() {
                         </div>
 
                         {/* Pagination Section */}
-                        {/* <div className="mt-4 flex justify-between items-center">
+                        <div className="mt-4 flex justify-between items-center">
                             <p className="text-sm font-[Poppins] text-gray-600">
-                                Showing {indexOfFirstAgency + 1} to {Math.min(indexOfLastAgency, agenciesData.length)} of {agenciesData.length} entries
+                                Showing {indexOfFirstAgency + 1} to {Math.min(indexOfLastAgency, filteredAgencies.length)} of {filteredAgencies.length} entries
                             </p>
                             <div className="flex">
                                 <button
@@ -346,7 +327,7 @@ function UserManagement() {
                                 >
                                     <ChevronLeft size={20} />
                                 </button>
-                                {[...Array(Math.ceil(agenciesData.length / itemsPerPage)).keys()].map((num) => (
+                                {[...Array(Math.ceil(filteredAgencies.length / itemsPerPage)).keys()].map((num) => (
                                     <button
                                         key={num + 1}
                                         onClick={() => paginate(num + 1)}
@@ -358,12 +339,12 @@ function UserManagement() {
                                 ))}
                                 <button
                                     className="px-3 py-1 rounded-r-md border bg-white text-gray-600 hover:bg-gray-100"
-                                    onClick={() => paginate(Math.min(currentPage + 1, Math.ceil(agenciesData.length / itemsPerPage)))}
+                                    onClick={() => paginate(Math.min(currentPage + 1, Math.ceil(filteredAgencies.length / itemsPerPage)))}
                                 >
                                     <ChevronRight size={20} />
                                 </button>
                             </div>
-                        </div> */}
+                        </div>
                     </div>
                     {/* <div className="mt-10">
                         <div className="flex justify-center gap-4 pb-4 max-sm:flex-col">

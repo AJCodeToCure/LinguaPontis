@@ -417,14 +417,30 @@ function CreateEvent() {
     const [slotsData, setSlotsData] = useState(null);
     const [bsData, setBsData] = useState(null);
 
-    const handleToggleChange = () => {
-        const newValue = !isToggled;
-        setIsToggled(newValue); // Update isToggled state
+    const handleManagerSelect = (e) => {
+        const selectedIds = Array.from(e.target.selectedOptions, (option) => option.value);
+        setSelectedManagerId(selectedIds); // Update the selected manager IDs
 
-        // Update agencyData with the new value for presence
-        setAgencyData(prevData => ({
+        // Update the team data with the selected manager IDs
+        setAgencyData((prevData) => ({
             ...prevData,
-            presence: newValue // Set presence to the new value of isToggled
+            other_managers: selectedIds.map((id) => ({
+                id,
+                is_confirm: false, // Initially, presence is false for all selected managers
+            })),
+        }));
+    };
+
+    // Handle the toggle change for each manager's presence
+    const handleToggleChange = (managerId) => {
+        // Toggle the presence for the specific manager
+        setAgencyData((prevData) => ({
+            ...prevData,
+            other_managers: prevData.other_managers.map((manager) =>
+                manager.id === managerId
+                    ? { ...manager, is_confirm: !manager.is_confirm } // Toggle presence state
+                    : manager
+            ),
         }));
     };
 
@@ -624,37 +640,17 @@ function CreateEvent() {
         }
     };
 
-    const handleManagerSelect = async (e) => {
-        // const selectedId = e.target.value;
-        const selectedId = Array.from(e.target.selectedOptions, (option) => option.value);
-        setSelectedManagerId(selectedId); // Update the selected mediator ID
+    // const handleManagerSelect = async (e) => {
+    //     // const selectedId = e.target.value;
+    //     const selectedId = Array.from(e.target.selectedOptions, (option) => option.value);
+    //     setSelectedManagerId(selectedId); // Update the selected mediator ID
 
-        // Update the team data with the selected mediator ID
-        setAgencyData((prevData) => ({
-            ...prevData,
-            other_managers: selectedId,
-        }));
-
-        // Now make the API call with the selected mediator ID
-        // try {
-        //     const response = await axios.get(
-        //         `${API}/api/mediator_all_slot/?mediator_id=${selectedId}`, {
-        //         headers: {
-        //             'Authorization': `Bearer ${token}`,
-        //             'Content-Type': 'application/json',
-        //         },
-        //     }
-        //     );
-        //     // Assuming the response contains available slots
-        //     setSlotsData(response.data); // Store the slots in state (or handle as needed)
-        //     console.log('Slots Data:', response.data); // Check what data is returned
-        // } catch (error) {
-        //     console.error('Error fetching slots:', error);
-        // }
-    };
-
-
-
+    //     // Update the team data with the selected mediator ID
+    //     setAgencyData((prevData) => ({
+    //         ...prevData,
+    //         other_managers: selectedId,
+    //     }));
+    // };
 
     return (
         <div className="flex h-screen">
@@ -700,15 +696,29 @@ function CreateEvent() {
                                 onChange={handleManagerSelect}
                                 name="beneficiary"
                             />
-                            <div className="flex items-center">
-                                <label htmlFor="toggle" className="mr-2 text-gray-700">Presence:</label>
-                                <input
-                                    type="checkbox"
-                                    id="toggle"
-                                    checked={isToggled}
-                                    onChange={handleToggleChange}
-                                    className="w-10 h-5 bg-gray-300 rounded-full cursor-pointer focus:outline-none transition duration-200 ease-in-out"
-                                />
+                            <div className='border-2 mt-6 p-2'>
+                                {agencyData.other_managers.map((manager) => {
+                                    const managerName = managerOptions.find(option => option.value === manager.id)?.label;
+
+                                    return (
+                                        <div>
+                                            <div key={manager.id} className="flex items-center space-x-4">
+                                                <span className='w-20'>{managerName}</span> {/* Display manager name */}
+
+                                                <div className="flex items-center">
+                                                    <label htmlFor={`toggle-${manager.id}`} className="mr-2 text-gray-700">Presence:</label>
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`toggle-${manager.id}`}
+                                                        checked={manager.is_confirm || false}  // Check if the presence is confirmed
+                                                        onChange={() => handleToggleChange(manager.id)}  // Handle toggle change
+                                                        className="w-10 h-5 bg-gray-300 rounded-full cursor-pointer focus:outline-none transition duration-200 ease-in-out"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                             <InputField label="Address" placeholder="Enter address" name="address" value={agencyData.address} onChange={(e) => handleChange(e, 'address')} />
                             <InputField label="City" placeholder="Enter city" name="city" value={agencyData.city} onChange={(e) => handleChange(e, 'city')} />
@@ -800,7 +810,7 @@ function CreateEvent() {
                                                 <td className="px-4 py-3 text-sm text-gray-600">{slot.username}</td>
                                                 <td className="px-4 py-3 text-sm text-gray-600">{slot.location}</td>
                                                 <td className="px-4 py-3 text-sm text-gray-600 break-words whitespace-normal max-w-xs">{slot.functions}</td>
-                                                </tr>
+                                            </tr>
                                         ))}
                                     </tbody>
                                 </table>
@@ -812,7 +822,7 @@ function CreateEvent() {
 
 
                     <div className="overflow-x-auto py-10">
-                        
+
                     </div>
 
 
@@ -823,7 +833,7 @@ function CreateEvent() {
             </div>
           </div> */}
             </div>
-        </div>
+        </div >
     )
 }
 

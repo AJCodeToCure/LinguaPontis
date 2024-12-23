@@ -15,6 +15,9 @@ function UpdateUser() {
     const [selectedImage, setSelectedImage] = useState(null); // Store the file itself, not object URL
 
     const token = sessionStorage.getItem('access_token');
+    const userGroup = sessionStorage.getItem('user_group');
+    console.log(userGroup);
+
     const navigate = useNavigate();
 
     const [userData, setUserData] = useState({
@@ -22,6 +25,7 @@ function UpdateUser() {
         last_name: '',
         contact: '',
         location: '',
+        functions: '',
         language_s: '',
         language_w: '',
         transportation_mode: '',
@@ -68,7 +72,7 @@ function UpdateUser() {
 
     const updateUser = async () => {
         const formData = new FormData();
-        
+
         // Append the selected image or the previous one if none selected
         if (selectedImage) {
             formData.append('image', selectedImage);
@@ -82,6 +86,7 @@ function UpdateUser() {
         formData.append('last_name', userData.last_name);
         formData.append('contact', userData.contact);
         formData.append('location', userData.location);
+        formData.append('functions', userData.functions);
         formData.append('language_s', userData.language_s);
         formData.append('language_w', userData.language_w);
         formData.append('transportation_mode', userData.transportation_mode);
@@ -161,27 +166,47 @@ function UpdateUser() {
                             value={userData.location}
                             onChange={handleChange} // Handle input change
                         />
-                        <InputField
-                            label="Language Speak"
-                            placeholder="Enter Language"
-                            name="language_s"
-                            value={userData.language_s}
-                            onChange={handleChange} // Handle input change
-                        />
-                        <InputField
-                            label="Language Write"
-                            placeholder="Enter Language"
-                            name="language_w"
-                            value={userData.language_w}
-                            onChange={handleChange} // Handle input change
-                        />
-                        <InputField
-                            label="Transportation Mode"
-                            placeholder="Enter Transportation Mode"
-                            name="transportation_mode"
-                            value={userData.transportation_mode}
-                            onChange={handleChange} // Handle input change
-                        />
+                        {
+                            (userGroup === 'super_user' || userGroup === 'beneficiary') && (
+                                <InputField
+                                    label="Function"
+                                    placeholder="Enter functions"
+                                    name="functions" // Update this to match the state key
+                                    value={userData.functions}
+                                    onChange={handleChange} // Handle input change
+                                />
+                            )
+                        }
+                        {
+                            (userGroup === 'super_user' || userGroup === 'mediator') && (
+                                <>
+                                    <InputField
+                                        label="Language Speak"
+                                        placeholder="Enter Language"
+                                        name="language_s"
+                                        value={userData.language_s}
+                                        onChange={handleChange} // Handle input change
+                                    />
+
+                                    <InputField
+                                        label="Language Write"
+                                        placeholder="Enter Language"
+                                        name="language_w"
+                                        value={userData.language_w}
+                                        onChange={handleChange} // Handle input change
+                                    />
+
+                                    <InputField
+                                        label="Transportation Mode"
+                                        placeholder="Enter Transportation Mode"
+                                        name="transportation_mode"
+                                        value={userData.transportation_mode}
+                                        onChange={handleChange} // Handle input change
+                                    />
+                                </>
+                            )
+                        }
+
                         {/* Submit buttons */}
                         <div className="flex justify-center items-center gap-4">
                             <button

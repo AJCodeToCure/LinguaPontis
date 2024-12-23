@@ -41,6 +41,7 @@ const Modal = ({ isOpen, onClose, onDelete }) => {
 const Agencies = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
   const [itemsPerPage] = useState(5); // Display 5 items per page
   const [selectedAgencies, setSelectedAgencies] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -62,25 +63,25 @@ const Agencies = () => {
         setAgencies(response.data);  // Store the members in the state
       } catch (error) {
         const statusCode = error.response.status;
-            const errorMessage = error.response.data.detail || error.message;
-            if (statusCode === 401) {
-                // Unauthorized - show error icon
-                Swal.fire({
-                    icon: "error",
-                    title: errorMessage,
-                });
-            } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
-                Swal.fire({
-                    icon: "question",
-                    title: errorMessage,
-                });
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: errorMessage,
-                });
-            }
-        
+        const errorMessage = error.response.data.detail || error.message;
+        if (statusCode === 401) {
+          // Unauthorized - show error icon
+          Swal.fire({
+            icon: "error",
+            title: errorMessage,
+          });
+        } else if (statusCode === 406 || statusCode === 404 || statusCode === 400) {
+          Swal.fire({
+            icon: "question",
+            title: errorMessage,
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: errorMessage,
+          });
+        }
+
       }
     };
 
@@ -180,10 +181,26 @@ const Agencies = () => {
     }
   };
 
+  // Filter agencies based on search query
+  // Filter agencies based on the search query
+  const filteredAgencies = agencies.filter((agency) => {
+    const lowercasedQuery = searchQuery.toLowerCase();
+
+    // Ensure both company_name and email are strings
+    const companyName = agency.company_name ? agency.company_name.toLowerCase() : '';
+    const email = agency.email ? agency.email.toLowerCase() : '';
+
+    return (
+      companyName.includes(lowercasedQuery) || // Search by company name
+      email.includes(lowercasedQuery)          // Search by email
+    );
+  });
+
+
   // Pagination Logic
   const indexOfLastAgency = currentPage * itemsPerPage;
   const indexOfFirstAgency = indexOfLastAgency - itemsPerPage;
-  const currentAgencies = agenciesData.slice(indexOfFirstAgency, indexOfLastAgency);
+  const currentAgencies = filteredAgencies.slice(indexOfFirstAgency, indexOfLastAgency);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const userGroup = sessionStorage.getItem('user_group');
@@ -192,26 +209,28 @@ const Agencies = () => {
     <div className="flex h-screen bg-gray-100">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="pl-20 flex-1 flex flex-col overflow-hidden">
-        <Navbar/>
+        <Navbar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-white p-6">
           <div className="container mt-20 max-sm:w-full w-10/12 mx-auto">
             <div className="flex justify-between items-center mb-6 max-sm:flex-col">
               <h1 className="text-2xl font-semibold font-[Poppins]">All Agencies Data</h1>
 
               <div className="flex items-center max-sm:flex-col">
-                {(userGroup === 'super_user') && ( 
-                <button
-                  className="px-4 mr-2 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
-                  onClick={() => navigate('/create-agency')}   // Directly call navigate in the onClick handler
-                >
-                  Create Agency
-                </button>
+                {(userGroup === 'super_user') && (
+                  <button
+                    className="px-4 mr-2 py-2 bg-[var(--darkBlue)] text-white rounded-md hover:bg-blue-800"
+                    onClick={() => navigate('/create-agency')}   // Directly call navigate in the onClick handler
+                  >
+                    Create Agency
+                  </button>
                 )}
                 <div className="relative mr-4 max-sm:mt-5 max-sm:mb-5">
                   <input
                     type="text"
-                    placeholder="Search"
+                    placeholder="Search by Company Name or Email"
                     className="pl-10 pr-4 py-2 bg-[#F9FBFF] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
                   />
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                     <MagnifyingIcons />
@@ -248,7 +267,7 @@ const Agencies = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {agencies.map((agency) => (
+                  {currentAgencies.map((agency) => (
                     <tr key={agency.id} className="hover:bg-gray-50 font-[Poppins] font-medium">
                       <td className="p-3">
                         <input
@@ -278,20 +297,20 @@ const Agencies = () => {
                           onClick={() => handleDelete(agency.id)} // Trigger delete
                         > */}
                         {(userGroup === 'super_user') && (
-                        <button onClick={openModal}>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
+                          <button onClick={openModal}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                          </button>
                         )}
-                        <Modal isOpen={isModalOpen} onClose={closeModal} onDelete={()=> handleDelete(agency.id)} />
+                        <Modal isOpen={isModalOpen} onClose={closeModal} onDelete={() => handleDelete(agency.id)} />
                         {(userGroup === 'super_user') && (
-                        <button className='ml-2' onClick={() => handleModify(agency.id)} // Pass agency.id to handleModify
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
+                          <button className='ml-2' onClick={() => handleModify(agency.id)} // Pass agency.id to handleModify
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                            </svg>
+                          </button>
                         )}
                       </td>
                     </tr>
@@ -301,9 +320,9 @@ const Agencies = () => {
             </div>
 
             {/* Pagination Section */}
-            {/* <div className="mt-4 flex justify-between items-center">
+            <div className="mt-4 flex justify-between items-center">
               <p className="text-sm font-[Poppins] text-gray-600">
-                Showing {indexOfFirstAgency + 1} to {Math.min(indexOfLastAgency, agenciesData.length)} of {agenciesData.length} entries
+                Showing {indexOfFirstAgency + 1} to {Math.min(indexOfLastAgency, filteredAgencies.length)} of {filteredAgencies.length} entries
               </p>
               <div className="flex">
                 <button
@@ -312,24 +331,24 @@ const Agencies = () => {
                 >
                   <ChevronLeft size={20} />
                 </button>
-                {[...Array(Math.ceil(agenciesData.length / itemsPerPage)).keys()].map((num) => (
+                {[...Array(Math.ceil(filteredAgencies.length / itemsPerPage)).keys()].map((num) => (
                   <button
                     key={num + 1}
                     onClick={() => paginate(num + 1)}
-                    className={`px-3 ml-2 mr-2 rounded-[8px] py-1 border ${currentPage === num + 1 ? 'bg-[var(--darkBlue)] text-white' : 'bg-white text-gray-600'
-                      } hover:bg-blue-100`}
+                    className={`px-3 ml-2 mr-2 rounded-[8px] py-1 border ${currentPage === num + 1 ? 'bg-[var(--darkBlue)] text-white' : 'bg-white text-gray-600'} hover:bg-blue-100`}
                   >
                     {num + 1}
                   </button>
                 ))}
                 <button
                   className="px-3 py-1 rounded-r-md border bg-white text-gray-600 hover:bg-gray-100"
-                  onClick={() => paginate(Math.min(currentPage + 1, Math.ceil(agenciesData.length / itemsPerPage)))}
+                  onClick={() => paginate(Math.min(currentPage + 1, Math.ceil(filteredAgencies.length / itemsPerPage)))}
                 >
                   <ChevronRight size={20} />
                 </button>
               </div>
-            </div> */}
+            </div>
+
           </div>
           <div className="mt-10">
             <div className="flex justify-center gap-4 pb-4 max-sm:flex-col">
